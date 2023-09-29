@@ -4,10 +4,11 @@ using CairoMakie
 using Printf
 
 β = 0
+f = 0
 
 grid = RectilinearGrid(size=(128,128), extent=(2π, 2π), topology=(Periodic, Bounded, Flat))
 
-coriolis = BetaPlane(f₀=1, β=β)
+coriolis = BetaPlane(f₀=f, β=β)
 
 model = NonhydrostaticModel(; grid,
                             timestepper = :RungeKutta3,
@@ -23,6 +24,11 @@ vᵢ = rand(size(v)...)
 
 uᵢ .-= mean(uᵢ)
 vᵢ .-= mean(vᵢ)
+
+# Two-dimensional Taylor Green Vortex
+#m = 2    # number of vortecies
+#uᵢ(x,y,z) = -cos(x*m)*sin(y*m)*0.2
+#vᵢ(x,y,z) = sin(x*m)*cos(y*m)*0.2
 
 set!(model, u=uᵢ, v=vᵢ)
 
@@ -51,7 +57,7 @@ filename = "2D_turbulence_β=$β"
 datapath = "idealized_flow_over_topography/beta_plane_turbulence/data/"
 animationpath = "idealized_flow_over_topography/beta_plane_turbulence/animations/"
 
-simulation.output_writers[:fields] = JLD2OutputWriter(model, (; ω, s, U, PV),
+simulation.output_writers[:fields] = JLD2OutputWriter(model, (; ω, s, u, v, U, PV),
                                                       schedule = TimeInterval(0.3),
                                                       filename = datapath*filename*".jld2",
                                                       overwrite_existing = true
