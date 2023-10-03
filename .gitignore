@@ -30,6 +30,7 @@ Manifest.toml
 # data files 
 *.jld2
 *.nc
+*data/
 
 # misc
-*.vscode
+*.vscode/
