@@ -13,13 +13,13 @@ Ly = 2π
 Lz = 2π*1e-3    # depth [m]
 
 # misc parameters
-β = 0          # planetary beta
-f = 10         # rotation 
+β = 1          # planetary beta
+f = 0         # rotation 
 
 # simulation parameters
 Δt = 0.005
-stop_time = 10
-save_fields_interval = 0.1
+stop_time = 100
+save_fields_interval = 0.3
 
 # create grid
 grid = RectilinearGrid(size=(Nx, Ny, Nz), 
@@ -28,8 +28,8 @@ grid = RectilinearGrid(size=(Nx, Ny, Nz),
                        )
 
 # Rotation
-#coriolis = BetaPlane(f₀=f, β=β)
-coriolis = FPlane(f)
+coriolis = BetaPlane(f₀=f, β=β)
+#coriolis = FPlane(f)
 
 # Turbulence closures 
 
@@ -62,6 +62,15 @@ vᵢ .-= mean(vᵢ)
 uᵢ = repeat(uᵢ, 1, 1, size(u)[3])
 vᵢ = repeat(vᵢ, 1, 1, size(v)[3])
 
+# initial field from 2D simulation
+#ti = 40
+
+#uᵢ = FieldTimeSeries(datapath*"2D_turbulence_β=0.jld2", "u").data[:,:,1,ti]
+#vᵢ = FieldTimeSeries(datapath*"2D_turbulence_β=0.jld2", "v").data[:,:,1,ti]
+
+#uᵢ = repeat(uᵢ, 1, 1, size(u)[3])
+#vᵢ = repeat(vᵢ, 1, 1, size(v)[3])
+
 set!(model, u=uᵢ, v=vᵢ, w=0)
 
 # create simulations
@@ -82,7 +91,7 @@ progress(sim) = @printf("i: % 6d, sim time: % 5.2f, wall time: % 15s, max |u|: %
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "2Dturbulence_3Ddomain"
+filename = "2Dturbulence_3Ddomain_β=$β"
 datapath = "idealized_flow_over_topography/beta_plane_turbulence/data/"
 animationpath = "idealized_flow_over_topography/beta_plane_turbulence/animations/"
 
@@ -99,7 +108,7 @@ PV = Average(ω, dims=(1, 3))
 
 
 
-simulation.output_writers[:fields] = JLD2OutputWriter(model, (; Ω, S, U, PV),
+simulation.output_writers[:fields] = JLD2OutputWriter(model, (; u, v, w, Ω, S, U, PV),
                                                       schedule = TimeInterval(save_fields_interval),
                                                       filename = datapath*filename*".jld2",
                                                       overwrite_existing = true

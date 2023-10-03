@@ -32,7 +32,7 @@ vᵢ .-= mean(vᵢ)
 
 set!(model, u=uᵢ, v=vᵢ)
 
-simulation = Simulation(model, Δt=0.2, stop_time=600)
+simulation = Simulation(model, Δt=0.2, stop_time=1000)
 
 # logging simulation progress
 start_time = time_ns()
