@@ -10,22 +10,33 @@ Nz = 8
 
 Lx = 2π 
 Ly = 2π 
-Lz = 2π*1e-3    # depth [m]
+Lz = (2π+0.1*2π)*1e-3    
 
 # misc parameters
 β = 0          # planetary beta
-f = 0         # rotation 
+f = 0          # rotation 
+α = 1e-3       # topographic slope
 
 # simulation parameters
 Δt = 0.005
-stop_time = 500
+stop_time = 600
 save_fields_interval = 0.3
 
 # Create grid
-grid = RectilinearGrid(size=(Nx, Ny, Nz), 
-                       extent=(Lx, Ly, Lz), 
-                       topology=(Periodic, Bounded, Bounded)
-                       )
+underlying_grid = RectilinearGrid(size=(Nx, Ny, Nz), 
+                                x = (0, Lx),
+                                y = (0, Ly),
+                                z = (-Lz, 0), 
+                                halo = (4, 4, 4),
+                                topology=(Periodic, Bounded, Bounded)
+                                )
+
+# define bathymetry. Slope, depth decreasing towards positive y
+hᵢ(x, y) = -Lz+α*y     
+
+# create grid with immersed bathymetry 
+grid = ImmersedBoundaryGrid(underlying_grid, GridFittedBottom(hᵢ))
+#grid = underlying_grid
 
 # Rotation
 coriolis = BetaPlane(f₀=f, β=β)
@@ -85,15 +96,15 @@ progress(sim) = @printf("i: % 6d, sim time: % 5.2f, wall time: % 15s, max |u|: %
                         prettytime(1e-9 * (time_ns() - start_time)),
                         maximum(abs, sim.model.velocities.u),
                         maximum(abs, sim.model.velocities.v),
-                        maximum(abs, sim.model.velocities.w),
+                        average(abs, sim.model.velocities.w),
                         )
 
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "2Dturbulence_3Ddomain_β=$β"
-datapath = "idealized_flow_over_topography/beta_plane_turbulence/data/"
-animationpath = "idealized_flow_over_topography/beta_plane_turbulence/animations/"
+filename = "2Dturbulence_3Ddomain_f=$(f)_β=$(β)_α=$(α)"
+datapath = "beta_plane_turbulence/data/"
+animationpath = "beta_plane_turbulence/animations/"
 
 u, v, w = model.velocities
 
