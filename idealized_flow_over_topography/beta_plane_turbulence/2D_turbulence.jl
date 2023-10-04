@@ -3,7 +3,7 @@ using Statistics
 using CairoMakie
 using Printf
 
-β = 0
+β = 0.5
 f = 0
 
 grid = RectilinearGrid(size=(128,128), extent=(2π, 2π), topology=(Periodic, Bounded, Flat))

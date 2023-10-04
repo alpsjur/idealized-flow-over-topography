@@ -13,15 +13,15 @@ Ly = 2π
 Lz = 2π*1e-3    # depth [m]
 
 # misc parameters
-β = 1          # planetary beta
+β = 0          # planetary beta
 f = 0         # rotation 
 
 # simulation parameters
 Δt = 0.005
-stop_time = 100
+stop_time = 500
 save_fields_interval = 0.3
 
-# create grid
+# Create grid
 grid = RectilinearGrid(size=(Nx, Ny, Nz), 
                        extent=(Lx, Ly, Lz), 
                        topology=(Periodic, Bounded, Bounded)
