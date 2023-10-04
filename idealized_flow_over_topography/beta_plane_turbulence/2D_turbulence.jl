@@ -3,7 +3,7 @@ using Statistics
 using CairoMakie
 using Printf
 
-β = 0.5
+β = 0
 f = 0
 
 grid = RectilinearGrid(size=(128,128), extent=(2π, 2π), topology=(Periodic, Bounded, Flat))
@@ -32,7 +32,7 @@ vᵢ .-= mean(vᵢ)
 
 set!(model, u=uᵢ, v=vᵢ)
 
-simulation = Simulation(model, Δt=0.2, stop_time=1000)
+simulation = Simulation(model, Δt=0.2, stop_time=100)
 
 # logging simulation progress
 start_time = time_ns()
@@ -53,6 +53,7 @@ s = sqrt(u^2+v^2)
 U = Average(u, dims=1)
 PV = Average(ω, dims=1)
 
+#filename = "2D_turbulence_test"
 filename = "2D_turbulence_β=$β"
 datapath = "idealized_flow_over_topography/beta_plane_turbulence/data/"
 animationpath = "idealized_flow_over_topography/beta_plane_turbulence/animations/"
