@@ -3,6 +3,12 @@ using Oceananigans.Units
 using Statistics
 using CairoMakie
 using Printf
+using Logging
+
+# creating a logger to store event messages to file
+io = open("log.txt", "w+")
+errorlogger = ConsoleLogger(io, Logging.Error)
+global_logger(errorlogger)
 
 Nx = 128
 Ny = 128
@@ -19,7 +25,7 @@ f = 0          # rotation
 
 # simulation parameters
 Δt = 0.005
-stop_time = 600
+stop_time = 0.01
 save_fields_interval = 0.3
 
 # Create grid
@@ -96,7 +102,7 @@ progress(sim) = @printf("i: % 6d, sim time: % 5.2f, wall time: % 15s, max |u|: %
                         prettytime(1e-9 * (time_ns() - start_time)),
                         maximum(abs, sim.model.velocities.u),
                         maximum(abs, sim.model.velocities.v),
-                        average(abs, sim.model.velocities.w),
+                        maximum(abs, sim.model.velocities.w),
                         )
 
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
@@ -188,3 +194,7 @@ frames = 1:length(times)
 record(fig, animationpath*filename*".mp4", frames, framerate=24) do i
     n[] = i
 end
+
+
+# close log file
+close(io)

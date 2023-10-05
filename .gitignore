@@ -34,3 +34,4 @@ idealized_flow_over_topography/Manifest.toml
 
 # misc
 *.vscode/
+*log.txt
