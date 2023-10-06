@@ -3,10 +3,26 @@ using Statistics
 using CairoMakie
 using Printf
 
-β = 0
-f = 0
+Nx = 128
+Ny = 128
 
-grid = RectilinearGrid(size=(128,128), extent=(2π, 2π), topology=(Periodic, Bounded, Flat))
+Lx = 2π 
+Ly = 2π    
+
+# misc parameters
+β = 0          # planetary beta
+f = 1          # rotation 
+
+# simulation parameters
+Δt = 0.2
+stop_time = 200
+save_fields_interval = 0.3
+
+grid = RectilinearGrid(size=(Nx, Ny), 
+                        x = (0, Lx),
+                        y = (0, Ly),
+                        topology=(Periodic, Bounded, Flat)
+                        )
 
 coriolis = BetaPlane(f₀=f, β=β)
 
@@ -32,7 +48,7 @@ vᵢ .-= mean(vᵢ)
 
 set!(model, u=uᵢ, v=vᵢ)
 
-simulation = Simulation(model, Δt=0.2, stop_time=100)
+simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
 
 # logging simulation progress
 start_time = time_ns()
@@ -59,7 +75,7 @@ datapath = "idealized_flow_over_topography/beta_plane_turbulence/data/"
 animationpath = "idealized_flow_over_topography/beta_plane_turbulence/animations/"
 
 simulation.output_writers[:fields] = JLD2OutputWriter(model, (; ω, s, u, v, U, PV),
-                                                      schedule = TimeInterval(0.3),
+                                                      schedule = TimeInterval(save_fields_interval),
                                                       filename = datapath*filename*".jld2",
                                                       overwrite_existing = true
                                                       )
@@ -89,14 +105,14 @@ fig = Figure(resolution=(1000,1000))
 axis_kwargs = (
                xlabel="x",
                ylabel="y",
-               limits=((0,2π), (0,2π)),
+               limits=((0,Lx), (0,Ly)),
                aspect=AxisAspect(1)
                )
 
 ax_ω = Axis(fig[2,1]; title="Vorticity", axis_kwargs...)
 ax_s = Axis(fig[2,2]; title="Speed", axis_kwargs...)
-ax_PV = Axis(fig[3,1]; title="zonal mean ζ+βy", (xlabel="[m/s]", ylabel="y",limits=((-2,β*2π+2), (0,2π)))...)
-ax_U = Axis(fig[3,2]; title="zonal mean u", (xlabel="[1/s]", ylabel="y",limits=((-0.2,0.2), (0,2π)))...)
+ax_PV = Axis(fig[3,1]; title="zonal mean ζ+βy", (xlabel="[m/s]", ylabel="y",limits=((-2,β*Lx+2), (0,Lx)))...)
+ax_U = Axis(fig[3,2]; title="zonal mean u", (xlabel="[1/s]", ylabel="y",limits=((-0.2,0.2), (0,Lx)))...)
 
 n = Observable(1)
 
