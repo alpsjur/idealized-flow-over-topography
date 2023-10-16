@@ -29,7 +29,9 @@ stop_time = 0.01
 save_fields_interval = 0.3
 
 # Create grid
-underlying_grid = RectilinearGrid(size=(Nx, Ny, Nz), 
+underlying_grid = RectilinearGrid(
+                                GPU();
+                                size=(Nx, Ny, Nz), 
                                 x = (0, Lx),
                                 y = (0, Ly),
                                 z = (-Lz, 0), 

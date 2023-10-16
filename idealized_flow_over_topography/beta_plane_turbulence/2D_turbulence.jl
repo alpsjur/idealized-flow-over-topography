@@ -11,11 +11,11 @@ Ly = 2π
 
 # misc parameters
 β = 0          # planetary beta
-f = 1          # rotation 
+f = 0          # rotation 
 
 # simulation parameters
 Δt = 0.2
-stop_time = 200
+stop_time = 600
 save_fields_interval = 0.3
 
 grid = RectilinearGrid(size=(Nx, Ny), 
