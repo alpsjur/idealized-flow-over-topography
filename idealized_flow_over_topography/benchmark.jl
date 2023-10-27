@@ -49,7 +49,6 @@ function run_model(Nx, Ny, Nz, Δt, stop_time, architecture)
             closure = (horizontal_closure, vertical_closure),
             coriolis = coriolis
             )
-    print(model)
 
     # set initial random velocity field
     u, v, w = model.velocities
@@ -108,7 +107,7 @@ stop_time = Δt*steps
 run_model(8, 8, 1, Δt, Δt*2, architecture)
 
 #for Nh in (8, 16, 32, 64, 128, 256, 512)
-for Nh in (8, 16, 32, 64, 128, 256, 512)    
+for Nh in (8, 16)    
     Nx = Nh
     Ny = Nh
     #for Nz in (1, 2, 4, 8, 16, 32)
