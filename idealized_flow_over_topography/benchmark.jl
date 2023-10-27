@@ -80,7 +80,7 @@ function benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
     shostname = gethostname()
     sarchitecture = string(architecture)[1:3]
     sthreads = string(Threads.nthreads())
-    sinitial = (initial)
+    sinitial = string(initial)
     sdt = string(Δt)
     ssteps = string(steps)
     sNx = string(Nx)
@@ -97,14 +97,14 @@ function benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
 end    
 
 
-architecture = GPU()
+architecture = CPU()
 
 # simulation parameters
 Δt = 0.005
 steps = 1000
 stop_time = Δt*steps
 
-# run model once to compile model 
+# run model once to compile model (?)
 run_model(8, 8, 1, Δt, Δt*2, architecture)
 
 # numer of times to run simulatio for each configuration
