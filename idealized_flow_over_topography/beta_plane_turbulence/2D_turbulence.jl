@@ -3,6 +3,7 @@ using Statistics
 using CairoMakie
 using Printf
 
+# grid parameters
 Nx = 128
 Ny = 128
 

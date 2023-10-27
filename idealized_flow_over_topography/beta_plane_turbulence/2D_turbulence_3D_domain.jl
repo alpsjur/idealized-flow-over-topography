@@ -10,6 +10,7 @@ io = open("log.txt", "w+")
 errorlogger = ConsoleLogger(io, Logging.Error)
 global_logger(errorlogger)
 
+# grid parameters
 Nx = 128
 Ny = 128
 Nz = 8
