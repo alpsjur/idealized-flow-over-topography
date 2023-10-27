@@ -71,7 +71,7 @@ function run_model(Nx, Ny, Nz, Δt, stop_time, architecture)
     return simulation
 end 
 
-function benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture)
+function benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
     simulation = run_model(Nx, Ny, Nz, Δt, stop_time, architecture)
     wall_time = simulation.run_wall_time
 
@@ -80,13 +80,14 @@ function benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture)
     shostname = gethostname()
     sarchitecture = string(architecture)[1:3]
     sthreads = string(Threads.nthreads())
+    sinitial = (initial)
     sdt = string(Δt)
     ssteps = string(steps)
     sNx = string(Nx)
     sNy = string(Ny)
     sNz = string(Nz)
     stime = string(round(wall_time, digits = 2))
-    output = snow*" "*shostname*" "*sarchitecture*" "*sthreads*" "*sdt*" "*ssteps*" "*sNx*" "*sNy*" "*sNz*" "*stime
+    output = snow*" "*shostname*" "*sarchitecture*" "*sthreads*" "*sinitial*" "*sdt*" "*ssteps*" "*sNx*" "*sNy*" "*sNz*" "*stime
 
 
     file =  open("benchmark_results.txt","a")
@@ -100,23 +101,23 @@ architecture = GPU()
 
 # simulation parameters
 Δt = 0.005
-steps = 100
+steps = 1000
 stop_time = Δt*steps
 
 # run model once to compile model 
 run_model(8, 8, 1, Δt, Δt*2, architecture)
 
 # numer of times to run simulatio for each configuration
-nsim = 2
+nsim = 4
 
-#for Nh in (8, 16, 32, 64, 128, 256, 512)
-for Nh in (8, 16)    
+for Nh in (8, 16, 32, 64, 128, 256, 512) 
     Nx = Nh
     Ny = Nh
-    #for Nz in (1, 2, 4, 8, 16, 32)
-    for Nz in (1, 2)
+    for Nz in (1, 2, 4, 8, 16, 32)
+        initial = true
         for i in 1:nsim
-            benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture)
+            benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
+            initial = false
         end
     end
 end

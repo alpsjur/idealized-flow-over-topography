@@ -1,1 +1,1 @@
-date hostname architecture threads dt timesteps Nx Ny Nz time
+date hostname architecture threads initial dt timesteps Nx Ny Nz time
