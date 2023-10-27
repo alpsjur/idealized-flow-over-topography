@@ -96,7 +96,7 @@ function benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture)
 end    
 
 
-architecture = CPU()
+architecture = GPU()
 
 # simulation parameters
 Δt = 0.005
@@ -106,12 +106,17 @@ stop_time = Δt*steps
 # run model once to compile model 
 run_model(8, 8, 1, Δt, Δt*2, architecture)
 
+# numer of times to run simulatio for each configuration
+nsim = 2
+
 #for Nh in (8, 16, 32, 64, 128, 256, 512)
 for Nh in (8, 16)    
     Nx = Nh
     Ny = Nh
     #for Nz in (1, 2, 4, 8, 16, 32)
     for Nz in (1, 2)
-        benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture)
+        for i in 1:nsim
+            benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture)
+        end
     end
 end
