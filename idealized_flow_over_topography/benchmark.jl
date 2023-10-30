@@ -108,7 +108,7 @@ stop_time = Δt*steps
 run_model(8, 8, 1, Δt, Δt*2, architecture)
 
 # numer of times to run simulatio for each configuration
-nsim = 4
+nsim = 3
 
 for Nh in (8, 16, 32, 64, 128, 256, 512) 
     Nx = Nh
