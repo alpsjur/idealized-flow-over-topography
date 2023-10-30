@@ -4,9 +4,9 @@ using Dates
 
 function run_model(Nx, Ny, Nz, Δt, stop_time, architecture)
     # grid parameters
-    Lx = 2π 
-    Ly = 2π 
-    Lz = (2π+0.1*2π)*1e-3  
+    Lx = 2π
+    Ly = 2π
+    Lz = (2π+0.1*2π)*1e-3
 
     # misc parameters
     β = 0          # planetary beta
@@ -101,14 +101,14 @@ architecture = CPU()
 
 # simulation parameters
 Δt = 0.005
-steps = 1000
+steps = 100
 stop_time = Δt*steps
 
 # run model once to compile model (?)
 run_model(8, 8, 1, Δt, Δt*2, architecture)
 
 # numer of times to run simulatio for each configuration
-nsim = 4
+nsim = 3
 
 for Nh in (8, 16, 32, 64, 128, 256, 512) 
     Nx = Nh
