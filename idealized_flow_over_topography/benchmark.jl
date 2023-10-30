@@ -75,6 +75,8 @@ function benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
     simulation = run_model(Nx, Ny, Nz, Δt, stop_time, architecture)
     wall_time = simulation.run_wall_time
 
+    simulation.
+
     # convert variables to string
     snow = string(now())
     shostname = gethostname()
@@ -101,7 +103,7 @@ architecture = CPU()
 
 # simulation parameters
 Δt = 0.005
-steps = 1000
+steps = 100
 stop_time = Δt*steps
 
 # run model once to compile model (?)
@@ -113,10 +115,10 @@ nsim = 4
 for Nh in (8, 16, 32, 64, 128, 256, 512) 
     Nx = Nh
     Ny = Nh
-    for Nz in (1, 2, 4, 8, 16, 32)
+    for Nz in (1, 2, 4, 8, 16, 32, 64)
         initial = true
         for i in 1:nsim
-            benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
+            simulation = benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
             initial = false
         end
     end
