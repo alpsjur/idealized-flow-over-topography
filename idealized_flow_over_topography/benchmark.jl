@@ -4,9 +4,9 @@ using Dates
 
 function run_model(Nx, Ny, Nz, Δt, stop_time, architecture)
     # grid parameters
-    Lx = 2π 
-    Ly = 2π 
-    Lz = (2π+0.1*2π)*1e-3  
+    Lx = 2π
+    Ly = 2π
+    Lz = (2π+0.1*2π)*1e-3
 
     # misc parameters
     β = 0          # planetary beta
@@ -75,8 +75,6 @@ function benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
     simulation = run_model(Nx, Ny, Nz, Δt, stop_time, architecture)
     wall_time = simulation.run_wall_time
 
-    simulation.
-
     # convert variables to string
     snow = string(now())
     shostname = gethostname()
@@ -115,10 +113,10 @@ nsim = 4
 for Nh in (8, 16, 32, 64, 128, 256, 512) 
     Nx = Nh
     Ny = Nh
-    for Nz in (1, 2, 4, 8, 16, 32, 64)
+    for Nz in (1, 2, 4, 8, 16, 32)
         initial = true
         for i in 1:nsim
-            simulation = benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
+            benchmark_model(Nx, Ny, Nz, Δt, stop_time, architecture, initial)
             initial = false
         end
     end
