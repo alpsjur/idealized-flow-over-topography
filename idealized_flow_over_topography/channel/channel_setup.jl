@@ -7,10 +7,10 @@ using CairoMakie
 
 
 # simulation parameters 
-Δt = 120second#120seconds
-stop_time = Δt*4#2days
-save_fields_interval = 1hour
-average_window = 1hour
+Δt = 120second
+stop_time = 3hours
+save_fields_interval = 10minutes
+average_window = 10minutes
 
 # grid parameters 
 Lx =  416kilometers
@@ -64,8 +64,23 @@ end
 
 
 
-# define bathymetry
+# define 3D bathymetry
 function hᵢ(x, y)
+    if y < (YC + W)                # shelf
+        h =  -DB - 0.5*DS*(1+tanh.(π*(y-YC)/W))
+    elseif Ly - y < (YC + W)       # slope
+        h = -DB - 0.5*DS*(1+tanh.(π*(Ly-y-YC)/W))
+    else                           # central basin
+        h =  -DB - DS
+    end
+    # add random noise
+    h += randn()*σ
+    return h
+end
+
+
+# define 2D bathymetry
+function hᵢ(y)
     if y < (YC + W)                # shelf
         h =  -DB - 0.5*DS*(1+tanh.(π*(y-YC)/W))
     elseif Ly - y < (YC + W)       # slope
@@ -90,23 +105,32 @@ horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 # Rotation
 coriolis = FPlane(1e-4)
 
-# spesify bottom drag 
-drag_u(x, y, t, v, R) = -R*u*√(u^2*v^2)
+# spesify 3D bottom drag 
+drag_u(x, y, t, u, v, R) = -R*u*√(u^2*v^2)
 drag_v(x, y, t, u, v, R) = -R*v*√(u^2*v^2) 
 
+# spesify 2D bottom drag
+drag_u(y, t, u, v, R) = drag_u(1, y, t, u, v, R)
+drag_v(y, t, u, v, R) = drag_v(1, y, t, u, v, R)
 
-# spesify drag on immersed boundary, note different arguments from bottom drag above
+# spesify 3D drag on immersed boundary, note different arguments from bottom drag above
 immersed_drag_u(x, y, z, t, u, v, R) = -R*u*√(u^2*v^2)
 immersed_drag_v(x, y, z, t, u, v, R) = -R*v*√(u^2*v^2)
 
+# spesify 2D immersed drag
+immersed_drag_u(y, z, t, u, v, R) = immersed_drag_u(1, y, z, t, u, v, R)
+immersed_drag_v(y, z, t, u, v, R) = immersed_drag_v(1, y, z, t, u, v, R)
 
 # spesify 3D surface forcing
 τx(x, y, t, τ) = τ
 τy(x, y, t, τ) = 0
 
+# spesify 2D surface forcing
+τx(y, t, τ) = τx(1, y, t, τ)
+τy(y, t, τ) = τy(1, y, t, τ)
+
 τx_bc = FluxBoundaryCondition(τx, parameters=τ)
 τy_bc = FluxBoundaryCondition(τy, parameters=τ)
-
 
 
 # linear equation of state, for finding buoyancy profile from T
@@ -114,10 +138,13 @@ buoyancy_from_T(T) = 9.80665.*(1.67e-4.*T .- 7.80e-4.*34)
 
 # TODO hvilken equation of state er i Aleksis simuleringer? 
 # define initial temperature TODO update
+
+# 3D initial profiles
 initial_temperature(x, y, z) = Tmax.*exp.(z./decay)
 initial_buoyancy(x, y, z) = (bmax+1).*exp.(z./decay).-1
 
-
+# 2D initial profile
+initial_buoyancy(y, z) = initial_buoyancy(1, y, z)
 
 """
 This discussion should be useful too: https://github.com/CliMA/Oceananigans.jl/discussions/3363

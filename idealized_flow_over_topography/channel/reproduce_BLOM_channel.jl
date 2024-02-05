@@ -40,7 +40,7 @@ ks = collect(1:51)
 zs = z_faces.(k)
 
 scatter!(ax, ks, zs)
-save("vertical_grid_spacing.png", fig)
+save("figures/vertical_grid_spacing.png", fig)
 
 
 # visualize bathymetry
@@ -58,7 +58,7 @@ fig, ax, hm = heatmap(x*1e-3, y*1e-3, bath,
 Colorbar(fig[1, 2], hm, label = "depth [m]")
 
 current_figure() # hide
-save("channel_bathymetry.png", fig)  
+save("figures/channel_bathymetry.png", fig)  
 
 
 
@@ -115,7 +115,7 @@ b = interior(model.tracers.b, 104, 256, :)
 
 
 lines!(axis, b, z)
-save("initial_buoyancy.png", fig)
+save("figures/initial_buoyancy.png", fig)
                       
                                                                 
 # create simulations
