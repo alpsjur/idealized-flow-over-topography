@@ -29,6 +29,7 @@ grid = ImmersedBoundaryGrid(underlying_grid,
 
 
 # visualize vertical grid spacing
+figurepath = "channel/figures/"
 fig = Figure()
 ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Vertical spacing (m)")
 
@@ -40,7 +41,7 @@ ks = collect(1:51)
 zs = z_faces.(k)
 
 scatter!(ax, ks, zs)
-save("figures/vertical_grid_spacing.png", fig)
+save(figurepath*"vertical_grid_spacing.png", fig)
 
 
 # visualize bathymetry
@@ -58,7 +59,7 @@ fig, ax, hm = heatmap(x*1e-3, y*1e-3, bath,
 Colorbar(fig[1, 2], hm, label = "depth [m]")
 
 current_figure() # hide
-save("figures/channel_bathymetry.png", fig)  
+save(figurepath*"channel_bathymetry.png", fig)  
 
 
 
@@ -115,7 +116,7 @@ b = interior(model.tracers.b, 104, 256, :)
 
 
 lines!(axis, b, z)
-save("figures/initial_buoyancy.png", fig)
+save(figurepath*"initial_buoyancy.png", fig)
                       
                                                                 
 # create simulations
