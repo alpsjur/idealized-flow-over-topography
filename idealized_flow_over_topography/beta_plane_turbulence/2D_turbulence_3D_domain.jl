@@ -3,33 +3,53 @@ using Oceananigans.Units
 using Statistics
 using CairoMakie
 using Printf
+using Logging
 
+# creating a logger to store event messages to file
+io = open("log.txt", "w+")
+errorlogger = ConsoleLogger(io, Logging.Error)
+global_logger(errorlogger)
+
+# grid parameters
 Nx = 128
 Ny = 128
 Nz = 8
 
 Lx = 2π 
 Ly = 2π 
-Lz = 2π*1e-3    # depth [m]
+Lz = (2π+0.1*2π)*1e-3    
 
 # misc parameters
 β = 0          # planetary beta
-f = 10         # rotation 
+f = 0          # rotation 
+α = 1e-3       # topographic slope
 
 # simulation parameters
 Δt = 0.005
-stop_time = 10
-save_fields_interval = 0.1
+stop_time = 0.01
+save_fields_interval = 0.3
 
-# create grid
-grid = RectilinearGrid(size=(Nx, Ny, Nz), 
-                       extent=(Lx, Ly, Lz), 
-                       topology=(Periodic, Bounded, Bounded)
-                       )
+# Create grid
+underlying_grid = RectilinearGrid(
+                                GPU();
+                                size=(Nx, Ny, Nz), 
+                                x = (0, Lx),
+                                y = (0, Ly),
+                                z = (-Lz, 0), 
+                                halo = (4, 4, 4),
+                                topology=(Periodic, Bounded, Bounded)
+                                )
+
+# define bathymetry. Slope, depth decreasing towards positive y
+hᵢ(x, y) = -Lz+α*y     
+
+# create grid with immersed bathymetry 
+grid = ImmersedBoundaryGrid(underlying_grid, GridFittedBottom(hᵢ))
+#grid = underlying_grid
 
 # Rotation
-#coriolis = BetaPlane(f₀=f, β=β)
-coriolis = FPlane(f)
+coriolis = BetaPlane(f₀=f, β=β)
+#coriolis = FPlane(f)
 
 # Turbulence closures 
 
@@ -62,6 +82,15 @@ vᵢ .-= mean(vᵢ)
 uᵢ = repeat(uᵢ, 1, 1, size(u)[3])
 vᵢ = repeat(vᵢ, 1, 1, size(v)[3])
 
+# initial field from 2D simulation
+#ti = 40
+
+#uᵢ = FieldTimeSeries(datapath*"2D_turbulence_β=0.jld2", "u").data[:,:,1,ti]
+#vᵢ = FieldTimeSeries(datapath*"2D_turbulence_β=0.jld2", "v").data[:,:,1,ti]
+
+#uᵢ = repeat(uᵢ, 1, 1, size(u)[3])
+#vᵢ = repeat(vᵢ, 1, 1, size(v)[3])
+
 set!(model, u=uᵢ, v=vᵢ, w=0)
 
 # create simulations
@@ -82,9 +111,9 @@ progress(sim) = @printf("i: % 6d, sim time: % 5.2f, wall time: % 15s, max |u|: %
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "2Dturbulence_3Ddomain"
-datapath = "idealized_flow_over_topography/beta_plane_turbulence/data/"
-animationpath = "idealized_flow_over_topography/beta_plane_turbulence/animations/"
+filename = "2Dturbulence_3Ddomain_f=$(f)_β=$(β)_α=$(α)"
+datapath = "beta_plane_turbulence/data/"
+animationpath = "beta_plane_turbulence/animations/"
 
 u, v, w = model.velocities
 
@@ -99,7 +128,7 @@ PV = Average(ω, dims=(1, 3))
 
 
 
-simulation.output_writers[:fields] = JLD2OutputWriter(model, (; Ω, S, U, PV),
+simulation.output_writers[:fields] = JLD2OutputWriter(model, (; u, v, w, Ω, S, U, PV),
                                                       schedule = TimeInterval(save_fields_interval),
                                                       filename = datapath*filename*".jld2",
                                                       overwrite_existing = true
@@ -168,3 +197,7 @@ frames = 1:length(times)
 record(fig, animationpath*filename*".mp4", frames, framerate=24) do i
     n[] = i
 end
+
+
+# close log file
+close(io)

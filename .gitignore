@@ -26,6 +26,7 @@ idealized_flow_over_topography/Manifest.toml
 # media files
 *.mp4
 *.pdf
+*.png
 
 # data files 
 *.jld2
@@ -34,3 +35,4 @@ idealized_flow_over_topography/Manifest.toml
 
 # misc
 *.vscode/
+*log.txt
