@@ -8,9 +8,9 @@ using CairoMakie
 
 # simulation parameters 
 Δt = 120second
-stop_time = 3hours
-save_fields_interval = 10minutes
-average_window = 10minutes
+stop_time = 30days
+save_fields_interval = 1hour
+average_window = 1hour
 
 # grid parameters 
 Lx =  416kilometers
@@ -40,7 +40,7 @@ DB =  250meters
 τ = -0.05/1000               # N m-2 / kg m-2  kinematic forcing
 
 # bottom friction
-R = 3e-4                    # Bottom quadratic drag coeficient TODO correct number
+R = 0.002                    # Bottom quadratic drag coeficient TODO correct number
 
 # stratification parameters 
 # svak restoring til denne profilen pga eksplisitt horisontalmiksing + numerisk diffusjon
@@ -88,8 +88,7 @@ function hᵢ(y)
     else                           # central basin
         h =  -DB - DS
     end
-    # add random noise
-    h += randn()*σ
+    
     return h
 end
 
@@ -146,28 +145,4 @@ initial_buoyancy(x, y, z) = (bmax+1).*exp.(z./decay).-1
 # 2D initial profile
 initial_buoyancy(y, z) = initial_buoyancy(1, y, z)
 
-"""
-This discussion should be useful too: https://github.com/CliMA/Oceananigans.jl/discussions/3363
-They're using the advective terms as an example, but basically it seems you can 
-define all the operations you need, like du/dt, (Av*u_z)_z, and pass them to your output writer.
-This way you should be able to save the momentum terms and close the budget exactly 
-at any output frequency you like. You might just have to define the time derivative separately. 
-That definition would have to match your simulation's time-stepping scheme, like what 
-they talk about regarding the advection scheme for the advective terms.
 
-a
-"""
-# time derivative of velocity 
-function ∂u∂t(model) 
-    # TODO fix first timestep
-    Gⁿ = model.timestepper.Gⁿ.u 
-    G⁻ = model.timestepper.G⁻.u 
-    χ  = model.timestepper.χ.u 
-
-    return (3/2 + χ) * Gⁿ - (1/2 + χ) * G⁻
-end
-
-#bottom friction force
-"""
-regne ut ved hjelp av likning for drag definert tidligere? Hvordan finne u ved bunn?
-"""
