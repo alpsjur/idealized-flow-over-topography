@@ -102,7 +102,7 @@ bn = Field(boundary_node_ccf_op)
 
 
 ###
-"""s
+"""
 
 # logging simulation progress
 start_time = time_ns()
