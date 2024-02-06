@@ -21,7 +21,7 @@ grid = ImmersedBoundaryGrid(underlying_grid,
 
 
 
-# create model. 2D model must be nonhydrostatic?
+# create model
 model =  HydrostaticFreeSurfaceModel(; grid,
                                     boundary_conditions=(u=u_bc, v=v_bc),
                                     free_surface = ImplicitFreeSurface(),
@@ -79,7 +79,7 @@ simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 filename = "2D_BLOM_channel_test"
 datapath = "channel/data/"
 
-
+"""
 simulation.output_writers[:fields] = JLD2OutputWriter(model, (; 
                                                         u, v, w,
                                                         uu, vv, uv,
@@ -93,7 +93,32 @@ simulation.output_writers[:fields] = JLD2OutputWriter(model, (;
                                                       with_halos = true,                           # for computation of derivatives at boundaries
                                                       init = init_save_some_metadata!
                                                       )
+"""
 
+outputs = Dict(
+  "u" => u, "v" => v, "w" => w, "b" => b,
+  #"uu" => uu, "vv" => vv, "uv" => uv,
+  #"η" => η, "p" => p, "b" => b,
+  #"ub" => ub, "vb" => vb, "wb" => wb
+)
+
+#dims = Dict(
+#  "uu" => 
+#)
+
+
+simulation.output_writers[:fields] =
+    NetCDFOutputWriter(
+      model, outputs,
+      schedule = AveragedTimeInterval(save_fields_interval, window=average_window),
+      filename= datapath*filename*".nc", 
+      #dimensions=dims, 
+      #verbose=true,
+      overwrite_existing = true,
+      with_halos = true,
+      #global_attributes=global_attributes, 
+      #output_attributes=output_attributes,
+    )
 
 # action!
 run!(simulation)
