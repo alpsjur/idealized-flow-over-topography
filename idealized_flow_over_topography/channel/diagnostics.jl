@@ -36,9 +36,6 @@ regne ut ved hjelp av likning for drag definert tidligere? Hvordan finne u ved b
 
 
 
-
-
-
 function init_save_some_metadata!(file, model)
     file["author"] = "Anna Lina Sjur"
     return nothing
