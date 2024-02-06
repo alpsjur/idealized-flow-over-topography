@@ -8,7 +8,7 @@ using CairoMakie                # For visualization
 
 # Simulation parameters
 Δt = 30second                   # Time step size
-stop_time = 10days              # Simulation stop time
+stop_time = 3hours#10days              # Simulation stop time
 save_fields_interval = 1hour    # Interval for saving output fields
 average_window = 1hour          # Averaging window for output data
 
