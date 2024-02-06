@@ -79,7 +79,6 @@ simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 filename = "2D_BLOM_channel_test"
 datapath = "channel/data/"
 
-"""
 simulation.output_writers[:fields] = JLD2OutputWriter(model, (; 
                                                         u, v, w,
                                                         uu, vv, uv,
@@ -93,8 +92,8 @@ simulation.output_writers[:fields] = JLD2OutputWriter(model, (;
                                                       with_halos = true,                           # for computation of derivatives at boundaries
                                                       init = init_save_some_metadata!
                                                       )
-"""
 
+"""
 outputs = Dict(
   "u" => u, "v" => v, "w" => w, "b" => b,
   #"uu" => uu, "vv" => vv, "uv" => uv,
@@ -119,6 +118,8 @@ simulation.output_writers[:fields] =
       #global_attributes=global_attributes, 
       #output_attributes=output_attributes,
     )
+"""
+
 
 # action!
 run!(simulation)
