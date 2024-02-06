@@ -62,8 +62,8 @@ set!(model, b=initial_buoyancy)
 simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
 
 # test time step wizard
-wizard = TimeStepWizard(cfl=0.2)
-simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(10))
+#wizard = TimeStepWizard(cfl=0.2)
+#simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(10))
                    
 #define diagnostics  (Which to save?)
 u, v, w = model.velocities
@@ -95,7 +95,7 @@ progress(sim) = @printf("i: % 6d, sim time: % 15s, wall time: % 15s, max |u|: % 
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "2D_BLOM_channel_test"
+filename = "2D_BLOM_channel"
 datapath = "channel/data/"
 
 
