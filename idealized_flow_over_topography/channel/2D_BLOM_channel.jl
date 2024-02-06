@@ -2,37 +2,39 @@ include("channel_setup.jl")
 
 # Create grid
 underlying_grid = RectilinearGrid(
-                                CPU();
-                                #GPU();
-                                size=(Ny, Nz), 
-                                y = (0, Ly),
-                                z = z_faces,
-                                halo = (4, 4),
-                                topology=(Flat, Bounded, Bounded)
-                                )
+  CPU();
+  #GPU();
+  size=(Ny, Nz), 
+  y = (0, Ly),
+  z = z_faces,
+  halo = (4, 4),
+  topology=(Flat, Bounded, Bounded)
+)
                               
 
 # create grid with immersed bathymetry 
 # PartialCell dosen't seem to work with 2D model
-grid = ImmersedBoundaryGrid(underlying_grid, 
-                            GridFittedBottom(hᵢ)
-                            #PartialCellBottom(hᵢ)
-                            )
+grid = ImmersedBoundaryGrid(
+  underlying_grid, 
+  GridFittedBottom(hᵢ)
+  #PartialCellBottom(hᵢ)
+)
 
 
 
 # create model
-model =  HydrostaticFreeSurfaceModel(; grid,
-                                    boundary_conditions=(u=u_bc, v=v_bc),
-                                    free_surface = ImplicitFreeSurface(),
-                                    momentum_advection = WENO(),
-                                    tracer_advection = WENO(),
-                                    closure = (horizontal_closure, vertical_closure),
-                                    coriolis = coriolis,
+model =  HydrostaticFreeSurfaceModel(; 
+  grid,
+  boundary_conditions=(u=u_bc, v=v_bc),
+  free_surface = ImplicitFreeSurface(),
+  momentum_advection = WENO(),
+  tracer_advection = WENO(),
+  closure = (horizontal_closure, vertical_closure),
+  coriolis = coriolis,
 
-                                    buoyancy = BuoyancyTracer(),
-                                    tracers = :b,
-                                    )
+  buoyancy = BuoyancyTracer(),
+  tracers = :b,
+)
 
 
 set!(model, b=initial_buoyancy)  
@@ -61,17 +63,18 @@ wb = w*b
 
 # logging simulation progress
 start_time = time_ns()
-progress(sim) = @printf("i: % 6d, sim time: % 15s, wall time: % 15s, max |u|: % 5.3f, max |v|: % 5.3f, max |w|: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
-                        sim.model.clock.iteration,
-                        prettytime(sim.model.clock.time),
-                        #sim.model.clock.time,
-                        prettytime(1e-9 * (time_ns() - start_time)),
-                        maximum(abs, u),
-                        maximum(abs, v),
-                        maximum(abs, w),
-                        maximum(abs, η),
-                        prettytime(sim.Δt),
-                        )
+progress(sim) = @printf(
+  "i: % 6d, sim time: % 15s, wall time: % 15s, max |u|: % 5.3f, max |v|: % 5.3f, max |w|: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
+  sim.model.clock.iteration,
+  prettytime(sim.model.clock.time),
+  #sim.model.clock.time,
+  prettytime(1e-9 * (time_ns() - start_time)),
+  maximum(abs, u),
+  maximum(abs, v),
+  maximum(abs, w),
+  maximum(abs, η),
+  prettytime(sim.Δt),
+)
 
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
@@ -79,46 +82,22 @@ simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 filename = "2D_BLOM_channel_test"
 datapath = "channel/data/"
 
-simulation.output_writers[:fields] = JLD2OutputWriter(model, (; 
-                                                        u, v, w,
-                                                        uu, vv, uv,
-                                                        η, p, b,
-                                                        ub, vb, wb,  
-                                                        ),
-                                                      schedule = AveragedTimeInterval(save_fields_interval, 
-                                                                                      window=average_window),
-                                                      filename = datapath*filename*".jld2",
-                                                      overwrite_existing = true,
-                                                      with_halos = true,                           # for computation of derivatives at boundaries
-                                                      init = init_save_some_metadata!
-                                                      )
-
-"""
-outputs = Dict(
-  "u" => u, "v" => v, "w" => w, "b" => b,
-  #"uu" => uu, "vv" => vv, "uv" => uv,
-  #"η" => η, "p" => p, "b" => b,
-  #"ub" => ub, "vb" => vb, "wb" => wb
+simulation.output_writers[:fields] = JLD2OutputWriter(
+  model, (; 
+    u, v, w,
+    uu, vv, uv,
+    η, p, b,
+    ub, vb, wb,  
+  ),
+  schedule = AveragedTimeInterval(
+    save_fields_interval, 
+    window=average_window
+  ),
+  filename = datapath*filename*".jld2",
+  overwrite_existing = true,
+  with_halos = true,                           # for computation of derivatives at boundaries
+  init = init_save_some_metadata!
 )
-
-#dims = Dict(
-#  "uu" => 
-#)
-
-
-simulation.output_writers[:fields] =
-    NetCDFOutputWriter(
-      model, outputs,
-      schedule = AveragedTimeInterval(save_fields_interval, window=average_window),
-      filename= datapath*filename*".nc", 
-      #dimensions=dims, 
-      #verbose=true,
-      overwrite_existing = true,
-      with_halos = true,
-      #global_attributes=global_attributes, 
-      #output_attributes=output_attributes,
-    )
-"""
 
 
 # action!
