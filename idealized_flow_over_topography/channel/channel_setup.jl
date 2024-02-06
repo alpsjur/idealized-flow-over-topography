@@ -7,10 +7,10 @@ using Printf                    # For formatted output
 using CairoMakie                # For visualization
 
 # Simulation parameters
-Δt = 120second                  # Time step size
-stop_time = 3hours              # Simulation stop time
-save_fields_interval = 10minutes # Interval for saving output fields
-average_window = 10minutes      # Averaging window for output data
+Δt = 30second                   # Time step size
+stop_time = 10days              # Simulation stop time
+save_fields_interval = 1hour    # Interval for saving output fields
+average_window = 1hour          # Averaging window for output data
 
 # Grid parameters
 Lx = 416kilometers              # Domain length in x-direction
