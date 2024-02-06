@@ -2,8 +2,8 @@ include("channel_setup.jl")
 
 # Create grid
 underlying_grid = RectilinearGrid(
-                                #CPU();
-                                GPU();
+                                CPU();
+                                #GPU();
                                 size=(Ny, Nz), 
                                 y = (0, Ly),
                                 z = z_faces,
@@ -19,27 +19,6 @@ grid = ImmersedBoundaryGrid(underlying_grid,
                             #PartialCellBottom(hᵢ)
                             )
 
-drag_u_bc = FluxBoundaryCondition(drag_u, field_dependencies=(:u, :v), parameters=R)
-drag_v_bc = FluxBoundaryCondition(drag_v, field_dependencies=(:u, :v), parameters=R)
-
-immersed_drag_u_bc = FluxBoundaryCondition(immersed_drag_u, field_dependencies=(:u, :v), parameters=R)
-immersed_drag_v_bc = FluxBoundaryCondition(immersed_drag_v, field_dependencies=(:u, :v), parameters=R)
-
-immersed_u_bc = ImmersedBoundaryCondition(bottom = immersed_drag_u_bc)
-immersed_v_bc = ImmersedBoundaryCondition(bottom = immersed_drag_v_bc)
-
-
-# create boundary conditions
-u_bc = FieldBoundaryConditions(
-                                bottom=drag_u_bc, 
-                                immersed=immersed_u_bc, 
-                                top=τx_bc
-                                )
-v_bc = FieldBoundaryConditions(
-                                bottom=drag_v_bc, 
-                                immersed=immersed_v_bc, 
-                                top=τy_bc
-                                )
 
 
 # create model. 2D model must be nonhydrostatic?
@@ -65,7 +44,9 @@ simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
 #wizard = TimeStepWizard(cfl=0.2)
 #simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(10))
                    
-#define diagnostics  (Which to save?)
+#define diagnostics 
+include("diagnostics.jl")
+
 u, v, w = model.velocities
 p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
 η = model.free_surface.η
@@ -95,7 +76,7 @@ progress(sim) = @printf("i: % 6d, sim time: % 15s, wall time: % 15s, max |u|: % 
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "2D_BLOM_channel"
+filename = "2D_BLOM_channel_test"
 datapath = "channel/data/"
 
 
@@ -109,7 +90,8 @@ simulation.output_writers[:fields] = JLD2OutputWriter(model, (;
                                                                                       window=average_window),
                                                       filename = datapath*filename*".jld2",
                                                       overwrite_existing = true,
-                                                      with_halos = true                           # for computation of derivatives at boundaries
+                                                      with_halos = true,                           # for computation of derivatives at boundaries
+                                                      init = init_save_some_metadata!
                                                       )
 
 

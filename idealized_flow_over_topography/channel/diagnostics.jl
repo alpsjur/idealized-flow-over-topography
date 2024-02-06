@@ -20,7 +20,26 @@ function ∂u∂t(model)
     return (3/2 + χ) * Gⁿ - (1/2 + χ) * G⁻
 end
 
+function ∂v∂t(model) 
+    # TODO fix first timestep
+    Gⁿ = model.timestepper.Gⁿ.v 
+    G⁻ = model.timestepper.G⁻.v 
+    χ  = model.timestepper.χ.v 
+
+    return (3/2 + χ) * Gⁿ - (1/2 + χ) * G⁻
+end
+
 #bottom friction force
 """
 regne ut ved hjelp av likning for drag definert tidligere? Hvordan finne u ved bunn?
 """
+
+
+
+
+
+
+function init_save_some_metadata!(file, model)
+    file["author"] = "Anna Lina Sjur"
+    return nothing
+end
