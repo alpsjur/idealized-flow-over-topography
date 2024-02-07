@@ -5,9 +5,9 @@ using Printf
 using JLD2
 
 # Define the path to the saved output file containing simulation data
-filename = "channel/data/2D_BLOM_channel_test.jld2"
+filename = "channel/data/2D_BLOM_channel.jld2"
 
-file = jldopen(ilename)
+file = jldopen(filename)
 
 # Open the JLD2 file and extract time series data 
 u_timeseries = FieldTimeSeries(filename, "u")
@@ -36,7 +36,7 @@ uₙ = @lift interior(u_timeseries[$n], 1, :, :)
 bₙ = @lift interior(b_timeseries[$n], 1, :, :)
 
 # Set limits for the velocity color scale
-ulim = 0.6
+ulim = maximum(abs, interior(u_timeseries))
 
 # Define common axis keywords for both plots
 axis_kwargs = (xlabel = "Cross-channel distance [km]",
