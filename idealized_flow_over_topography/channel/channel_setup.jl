@@ -5,10 +5,15 @@ using Oceananigans.ImmersedBoundaries: ImmersedBoundaryGrid, PartialCellBottom  
 using Random                    # For generating random numbers
 using Printf                    # For formatted output
 using CairoMakie                # For visualization
+using Oceananigans.TurbulenceClosures:
+    RiBasedVerticalDiffusivity,
+    CATKEVerticalDiffusivity,
+    ConvectiveAdjustmentVerticalDiffusivity,
+    ExplicitTimeDiscretization
 
 # Simulation parameters
 Δt = 30second                   # Time step size
-stop_time = 3hours#10days              # Simulation stop time
+stop_time = 10days              # Simulation stop time
 save_fields_interval = 1hour    # Interval for saving output fields
 average_window = 1hour          # Averaging window for output data
 
@@ -49,8 +54,10 @@ decay = 100meter                # Decay scale for temperature and buoyancy profi
 νh = 0   
 κz = 1e-5
 νz = 1e-5
-vertical_closure = ScalarDiffusivity(ν = νz, κ = κz)                 
+#vertical_closure = ScalarDiffusivity(ν = νz, κ = κz)  
+vertical_closure = RiBasedVerticalDiffusivity()                
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
+
 
 # Rotation
 coriolis = FPlane(1e-4)
@@ -80,7 +87,7 @@ function hᵢ(x, y)
         h =  -DB - DS
     end
     # add random noise
-    h += randn()*σ
+    #h += randn()*σ
     return h
 end
 

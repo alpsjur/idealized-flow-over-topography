@@ -122,7 +122,7 @@ progress(sim) = @printf(
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "2D_BLOM_channel_test"
+filename = "2D_BLOM_channel_RiBasedClosure"
 datapath = "channel/data/"
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
