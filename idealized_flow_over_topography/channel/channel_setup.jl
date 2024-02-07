@@ -5,11 +5,6 @@ using Oceananigans.ImmersedBoundaries: ImmersedBoundaryGrid, PartialCellBottom  
 using Random                    # For generating random numbers
 using Printf                    # For formatted output
 using CairoMakie                # For visualization
-using Oceananigans.TurbulenceClosures:
-    RiBasedVerticalDiffusivity,
-    CATKEVerticalDiffusivity,
-    ConvectiveAdjustmentVerticalDiffusivity,
-    ExplicitTimeDiscretization
 
 # Simulation parameters
 Δt = 30second                   # Time step size
@@ -50,12 +45,11 @@ decay = 100meter                # Decay scale for temperature and buoyancy profi
 
 
 # Turbulence closures parameters for vertical and horizontal mixing
-κh = 0
-νh = 0   
-κz = 1e-5
-νz = 1e-5
-#vertical_closure = ScalarDiffusivity(ν = νz, κ = κz)  
-vertical_closure = RiBasedVerticalDiffusivity()                
+κh = 0.5e-5 # [m²/s] horizontal diffusivity
+νh = 30.0   # [m²/s] horizontal viscocity
+κz = 0.5e-5 # [m²/s] vertical diffusivity
+νz = 3e-4   # [m²/s] vertical viscocity
+vertical_closure = ScalarDiffusivity(ν = νz, κ = κz)                  
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 
 

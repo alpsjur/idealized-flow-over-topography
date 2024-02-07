@@ -61,10 +61,12 @@ ub = u*b
 vb = v*b 
 wb = w*b
 
-fcf = (Face(), Center(), Face())
+
 
 """
 ### Code from https://github.com/CliMA/Oceananigans.jl/discussions/3423
+fcf = (Face(), Center(), Face())
+
 
 get_qᵂ(i, j, k, ibg, args...)
 get_qᴱ(i, j, k, ibg, args...)
@@ -122,7 +124,7 @@ progress(sim) = @printf(
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "2D_BLOM_channel_RiBasedClosure"
+filename = "2D_BLOM_channel_highDiffusivity"
 datapath = "channel/data/"
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
