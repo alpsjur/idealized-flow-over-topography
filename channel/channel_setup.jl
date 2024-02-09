@@ -66,8 +66,10 @@ horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 # Run on GPU (wow, fast!) if available. Else run on CPU
 if CUDA.functional()
     architecture = GPU()
+    @info "Running on GPU"
 else
     architecture = CPU()
+    @info "Running on CPU"
 end
 
 
