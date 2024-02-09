@@ -1,9 +1,9 @@
 include("channel_setup.jl")
 
+
 # Create grid
 underlying_grid = RectilinearGrid(
-  CPU();
-  #GPU();
+  architecture;
   size=(Ny, Nz), 
   y = (0, Ly),
   z = z_faces,

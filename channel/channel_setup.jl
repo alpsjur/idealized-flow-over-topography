@@ -5,6 +5,7 @@ using Oceananigans.ImmersedBoundaries: ImmersedBoundaryGrid, PartialCellBottom  
 using Random                    # For generating random numbers
 using Printf                    # For formatted output
 using CairoMakie                # For visualization
+using CUDA
 
 # Simulation parameters
 Δt = 30second                   # Time step size
@@ -33,10 +34,10 @@ DB = 250meters                  # Base depth
 σ  = 10meters                   # Standard deviation for random noise in topography
 
 # Forcing parameters
-τ = -0.05/1000                  # Wind stress (kinematic forcing)
+const τ = -0.05/1000                  # Wind stress (kinematic forcing)
 
 # Bottom friction
-R = 0.002                       # Quadratic drag coefficient
+const R = 0.002                       # Quadratic drag coefficient
 
 # Stratification parameters
 Tmax = 15                       # Maximum temperature
@@ -55,6 +56,14 @@ horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 
 # Rotation
 coriolis = FPlane(1e-4)
+
+
+# Run on GPU (wow, fast!) if available. Else run on CPU
+if CUDA.functional()
+    architecture = GPU()
+else
+    architecture = CPU()
+end
 
 
 # Stretching function for vertical coordinates
