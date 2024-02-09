@@ -10,7 +10,7 @@ filename = "channel/data/2D_BLOM_channel.jld2"
 file = jldopen(filename)
 
 # Open the JLD2 file and extract time series data 
-u_timeseries = FieldTimeSeries(filename, "u")
+v_timeseries = FieldTimeSeries(filename, "v")
 b_timeseries = FieldTimeSeries(filename, "b")
 
 # Extract time points and bottom height 
@@ -19,7 +19,7 @@ h = b_timeseries.grid.immersed_boundary.bottom_height
 h = interior(h,1,:,1)  # Adjust the bottom height array for visualization
 
 # Get coordinate arrays 
-xu, yu, zu = nodes(u_timeseries[1])  
+xv, yv, zv = nodes(v_timeseries[1])  
 xc, yc, zc = nodes(b_timeseries[1])  
 
 # Initialize logging for the animation creation process
@@ -32,11 +32,11 @@ n = Observable(1)
 title = @lift @sprintf("%20s", prettytime(times[$n]))
 
 # Extract the interior data for the u and b fields at the current time step, dynamically updated
-uₙ = @lift interior(u_timeseries[$n], 1, :, :)
+vₙ = @lift interior(v_timeseries[$n], 1, :, :)
 bₙ = @lift interior(b_timeseries[$n], 1, :, :)
 
 # Set limits for the velocity color scale
-ulim = maximum(abs, interior(u_timeseries))
+vlim = maximum(abs, interior(v_timeseries))
 
 # Define common axis keywords for both plots
 axis_kwargs = (xlabel = "Cross-channel distance [km]",
@@ -48,16 +48,16 @@ axis_kwargs = (xlabel = "Cross-channel distance [km]",
 fig = Figure(size = (1200, 1100))
 
 # Create axes for velocity and buoyancy 
-ax_u = Axis(fig[2, 1]; title = "u velocity [m/s]", axis_kwargs...)
+ax_v = Axis(fig[2, 1]; title = "v velocity [m/s]", axis_kwargs...)
 ax_b = Axis(fig[3, 1]; title = "buoyancy", axis_kwargs...)
 
 # Add a title 
 fig[1, :] = Label(fig, title, fontsize=24, tellwidth=false)
 
 # Create a heatmap for the velocity field
-hm_u = heatmap!(ax_u, yu*1e-3, zu, uₙ; colorrange = (-ulim, ulim), colormap = :balance)
-Colorbar(fig[2, 2], hm_u)
-band!(ax_u, yc*1e-3, minimum(h), h, alpha=0.5, color=:lightgray)
+hm_v = heatmap!(ax_v, yv*1e-3, zv, vₙ; colorrange = (-vlim, vlim), colormap = :balance)
+Colorbar(fig[2, 2], hm_v)
+band!(ax_v, yc*1e-3, minimum(h), h, alpha=0.5, color=:lightgray)
 
 # Create a heatmap for the buoyancy field
 hm_b = heatmap!(ax_b, yc*1e-3, zc, bₙ; colorrange = (-1, 0), colormap = :dense)

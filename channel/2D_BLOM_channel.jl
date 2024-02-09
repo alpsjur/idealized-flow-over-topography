@@ -1,6 +1,7 @@
 include("channel_setup.jl")
 
 
+
 # Create grid
 underlying_grid = RectilinearGrid(
   architecture;
@@ -38,6 +39,21 @@ model =  HydrostaticFreeSurfaceModel(;
 
 
 set!(model, b=initial_buoyancy)  
+
+"""
+# plot initial profile
+figurepath = "channel/figures/"
+fig = Figure()
+axis = Axis(fig[1,1], xlabel = "Buoyancy", ylabel = "z")
+
+
+z = znodes(model.tracers.b)
+b = interior(model.tracers.b, 1, 256, :)
+
+
+lines!(axis, b, z)
+save(figurepath*"initial_buoyancy.png", fig)
+"""
 
 # create simulations
 simulation = Simulation(model, Δt=Δt, stop_time=stop_time)

@@ -9,14 +9,14 @@ using CUDA
 
 # Simulation parameters
 Δt = 30second                   # Time step size
-stop_time = 10days              # Simulation stop time
-save_fields_interval = 1hour    # Interval for saving output fields
-average_window = 1hour          # Averaging window for output data
+stop_time = 200days             # Simulation stop time
+save_fields_interval = 1day     # Interval for saving output fields
+average_window = 1day           # Averaging window for output data
 
 # Grid parameters
 Lx = 416kilometers              # Domain length in x-direction
 Ly = 1024kilometers             # Domain length in y-direction
-Lz = 2250meters                 # Domain depth
+Lz = 2300meters                 # Domain depth
 dx = 2kilometers                # Grid spacing in x-direction
 dy = 2kilometers                # Grid spacing in y-direction
 Nx = Int(Lx/dx)                 # Number of grid cells in x-direction
@@ -37,25 +37,30 @@ DB = 250meters                  # Base depth
 const τ = -0.05/1000                  # Wind stress (kinematic forcing)
 
 # Bottom friction
-const R = 0.002                       # Quadratic drag coefficient
+const Cd = 0.002                      # Quadratic drag coefficient []
+
+# Rotation
+f = 1e-4
+coriolis = FPlane(f)
+
+
+decay_from_LR(bmax, LR, f) = (LR*abs(f)/(2))^2/bmax
+
 
 # Stratification parameters
-Tmax = 15                       # Maximum temperature
-bmax = 0.76-1                   # Maximum buoyancy anomaly
-decay = 100meter                # Decay scale for temperature and buoyancy profiles
+bmax = 1                                    # Maximum buoyancy anomaly
+LR = 30kilometers                           # Deformation radius over deep ocean
+decay = 100meters#decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [m]
 
 
 # Turbulence closures parameters for vertical and horizontal mixing
-κh = 0.5e-5 # [m²/s] horizontal diffusivity
-νh = 30.0   # [m²/s] horizontal viscocity
-κz = 0.5e-5 # [m²/s] vertical diffusivity
-νz = 3e-4   # [m²/s] vertical viscocity
+κh = 100    # [m²/s] horizontal diffusivity
+νh = 100    # [m²/s] horizontal viscocity      Increase if simulation blows up
+κz = 1e-5   # [m²/s] vertical diffusivity
+νz = 1e-5   # [m²/s] vertical viscocity
 vertical_closure = ScalarDiffusivity(ν = νz, κ = κz)                  
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 
-
-# Rotation
-coriolis = FPlane(1e-4)
 
 
 # Run on GPU (wow, fast!) if available. Else run on CPU
@@ -70,11 +75,11 @@ end
 function Σ(nk)     
     refinement = 0.2 # fraction of points for surface layer
     depth = 0.1      # fractional depth of surface layer
-    rate = 12        # tuned manually for smooth change in Δz
+    rate = 11        # tuned manually for smooth change in Δz
     if nk < 1-refinement
         return (1-depth)*nk/(1-refinement)
     else 
-        return (1-depth) + (atan((nk-1+refinement)*rate)/atan(refinement*rate))*depth
+        return (1-depth) + (tanh((nk-1+refinement)*rate)/tanh(refinement*rate))*depth
     end
 end
 
@@ -97,11 +102,11 @@ end
 hᵢ(y) = hᵢ(1, y)
 
 # spesify bottom drag 
-drag_u(x, y, t, u, v, R) = -R*u*√(u^2*v^2)
-drag_v(x, y, t, u, v, R) = -R*v*√(u^2*v^2) 
+drag_u(x, y, t, u, v, Cd) = -Cd*√(u^2+v^2)*u
+drag_v(x, y, t, u, v, Cd) = -Cd*√(u^2+v^2)*v
 
-drag_u(y, t, u, v, R) = drag_u(1, y, t, u, v, R)
-drag_v(y, t, u, v, R) = drag_v(1, y, t, u, v, R)
+drag_u(y, t, u, v, R) = drag_u(1, y, t, u, v, Cd)
+drag_v(y, t, u, v, R) = drag_v(1, y, t, u, v, Cd)
 
 # spesify drag on immersed boundary, note different arguments from bottom drag above
 immersed_drag_u(x, y, z, t, u, v, R) = -R*u*√(u^2*v^2)
@@ -111,18 +116,18 @@ immersed_drag_u(y, z, t, u, v, R) = immersed_drag_u(1, y, z, t, u, v, R)
 immersed_drag_v(y, z, t, u, v, R) = immersed_drag_v(1, y, z, t, u, v, R)
 
 # create bottom boundary conditions
-drag_u_bc = FluxBoundaryCondition(drag_u, field_dependencies=(:u, :v), parameters=R)
-drag_v_bc = FluxBoundaryCondition(drag_v, field_dependencies=(:u, :v), parameters=R)
+drag_u_bc = FluxBoundaryCondition(drag_u, field_dependencies=(:u, :v), parameters=Cd)
+drag_v_bc = FluxBoundaryCondition(drag_v, field_dependencies=(:u, :v), parameters=Cd)
 
-immersed_drag_u_bc = FluxBoundaryCondition(immersed_drag_u, field_dependencies=(:u, :v), parameters=R)
-immersed_drag_v_bc = FluxBoundaryCondition(immersed_drag_v, field_dependencies=(:u, :v), parameters=R)
+immersed_drag_u_bc = FluxBoundaryCondition(immersed_drag_u, field_dependencies=(:u, :v), parameters=Cd)
+immersed_drag_v_bc = FluxBoundaryCondition(immersed_drag_v, field_dependencies=(:u, :v), parameters=Cd)
 
 immersed_u_bc = ImmersedBoundaryCondition(bottom = immersed_drag_u_bc)
 immersed_v_bc = ImmersedBoundaryCondition(bottom = immersed_drag_v_bc)
 
 
 # spesify surface forcing
-τx(x, y, t, τ) = τ
+τx(x, y, t, τ) = τ*tanh(t/(10days))
 τy(x, y, t, τ) = 0
 
 τx(y, t, τ) = τx(1, y, t, τ)
@@ -147,15 +152,12 @@ v_bc = FieldBoundaryConditions(
 
 
 
-
-
 # linear equation of state, for finding buoyancy profile from T
 buoyancy_from_T(T) = 9.80665.*(1.67e-4.*T .- 7.80e-4.*34)
 
-# initial buoyancy profiles
+# initial buoyancy profiles  #TODO sjekk dette Finn decay scale fra Ld i ALeksis artikkel
 #initial_temperature(x, y, z) = Tmax.*exp.(z./decay)
-initial_buoyancy(x, y, z) = (bmax+1).*exp.(z./decay).-1
-
+initial_buoyancy(x, y, z) = bmax.*exp.(z./decay)            #  [m/s2]
 initial_buoyancy(y, z) = initial_buoyancy(1, y, z)
 
 
