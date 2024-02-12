@@ -99,8 +99,8 @@ save(figurepath*"initial_buoyancy.png", fig)
 simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
 
 # test time step wizard
-wizard = TimeStepWizard(cfl=0.2)
-simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(1))
+#wizard = TimeStepWizard(cfl=0.2)
+#simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(1))
 
 
 #define diagnostics  (Which to save?)
@@ -127,8 +127,8 @@ wb = w*b
 start_time = time_ns()
 progress(sim) = @printf("i: % 6d, sim time: % 5.2f, wall time: % 15s, max |u|: % 5.3f, max |v|: % 5.3f, max |w|: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
         sim.model.clock.iteration,
-        #prettytime(sim.model.clock.time),
-        sim.model.clock.time,
+        prettytime(sim.model.clock.time),
+        #sim.model.clock.time,
         prettytime(1e-9 * (time_ns() - start_time)),
         maximum(abs, u),
         maximum(abs, v),
@@ -137,7 +137,7 @@ progress(sim) = @printf("i: % 6d, sim time: % 5.2f, wall time: % 15s, max |u|: %
         prettytime(sim.Δt),
 )
 
-simulation.callbacks[:progress] = Callback(progress, IterationInterval(1))
+simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
 filename = "3D_BLOM_channel"
