@@ -7,27 +7,29 @@ include("channel_setup.jl")
 # save bottom drag 
 # save bottom pressure
 
+# Overwrite variables from channel_setup.jl
+Nx = 10
+Lx = dx*Nx
+stop_time = 10days
 
 # Create grid
 underlying_grid = RectilinearGrid(
-                                CPU();
-                                size=(Nx, Ny, Nz), 
-                                x = (0, Lx),
-                                y = (0, Ly),
-                                z = z_faces,
-                                halo = (4, 4, 4),
-                                topology=(Periodic, Bounded, Bounded)
-                                )
+        architecture;
+        size=(Nx, Ny, Nz), 
+        x = (0, Lx),
+        y = (0, Ly),
+        z = z_faces,
+        halo = (4, 4, 4),
+        topology=(Periodic, Bounded, Bounded)
+)
                               
-
-
 # create grid with immersed bathymetry 
 grid = ImmersedBoundaryGrid(underlying_grid, 
                             #GridFittedBottom(hᵢ)
                             PartialCellBottom(hᵢ)
                             )
 
-
+"""
 # visualize vertical grid spacing
 figurepath = "channel/figures/"
 fig = Figure()
@@ -42,8 +44,9 @@ zs = z_faces.(ks)
 
 scatter!(ax, ks, zs)
 save(figurepath*"vertical_grid_spacing.png", fig)
+"""
 
-
+"""
 # visualize bathymetry
 x, y, z = nodes(grid, (Center(), Center(), Center()))
 
@@ -60,31 +63,7 @@ Colorbar(fig[1, 2], hm, label = "depth [m]")
 
 current_figure() # hide
 save(figurepath*"channel_bathymetry.png", fig)  
-
-
-
-drag_u_bc = FluxBoundaryCondition(drag_u, field_dependencies=(:u, :v), parameters=R)
-drag_v_bc = FluxBoundaryCondition(drag_v, field_dependencies=(:u, :v), parameters=R)
-
-immersed_drag_u_bc = FluxBoundaryCondition(immersed_drag_u, field_dependencies=(:u, :v), parameters=R)
-immersed_drag_v_bc = FluxBoundaryCondition(immersed_drag_v, field_dependencies=(:u, :v), parameters=R)
-
-immersed_u_bc = ImmersedBoundaryCondition(bottom = immersed_drag_u_bc)
-immersed_v_bc = ImmersedBoundaryCondition(bottom = immersed_drag_v_bc)
-
-
-# create boundary conditions
-u_bc = FieldBoundaryConditions(
-                               bottom=drag_u_bc, 
-                               immersed=immersed_u_bc, 
-                               top=τx_bc
-                               )
-v_bc = FieldBoundaryConditions(
-                               bottom=drag_v_bc, 
-                               immersed=immersed_v_bc, 
-                               top=τy_bc
-                               )
-
+"""
 
 # create model
 model = HydrostaticFreeSurfaceModel(; grid,
@@ -102,22 +81,19 @@ model = HydrostaticFreeSurfaceModel(; grid,
 println(model)
 
 # set initial density profile
-#set!(model, T=initial_temperature, S=34)
 set!(model, b=initial_buoyancy)              
 
+"""
 # plot initial profile
 fig = Figure()
 axis = Axis(fig[1,1], xlabel = "Buoyancy", ylabel = "z")
 
-
-
 z = znodes(model.tracers.b)
 b = interior(model.tracers.b, 104, 256, :)
 
-
 lines!(axis, b, z)
 save(figurepath*"initial_buoyancy.png", fig)
-                      
+"""                      
                                                                 
 # create simulations
 simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
@@ -128,10 +104,13 @@ simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(1))
 
 
 #define diagnostics  (Which to save?)
+#define diagnostics 
+include("diagnostics.jl")
+
 u, v, w = model.velocities
-p = model.pressure      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
+p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
 η = model.free_surface.η
-b = model.tracers
+b = model.tracers.b
 
 uu = u*u 
 vv = v*v
@@ -146,32 +125,40 @@ wb = w*b
 
 # logging simulation progress
 start_time = time_ns()
-progress(sim) = @printf("i: % 6d, sim time: % 5.2f, wall time: % 15s, max |u|: % 5.3f, max |w|: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
-                        sim.model.clock.iteration,
-                        #prettytime(sim.model.clock.time),
-                        sim.model.clock.time,
-                        prettytime(1e-9 * (time_ns() - start_time)),
-                        maximum(abs, u),
-                        maximum(abs, w),
-                        maximum(abs, η),
-                        prettytime(sim.Δt),
-                        )
+progress(sim) = @printf(
+  "i: % 6d, sim time: % 15s, wall time: % 15s, max speed: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
+  sim.model.clock.iteration,
+  prettytime(sim.model.clock.time),
+  #sim.model.clock.time,
+  prettytime(1e-9 * (time_ns() - start_time)),
+  maximum(abs, sqrt(u^2+v^2+w^2)),
+  maximum(abs, η),
+  prettytime(sim.Δt),
+)
 
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1))
 
 # write output to file
-filename = "BLOM_channel"
+filename = "3D_BLOM_channel"
 datapath = "channel/data/"
 
 
-simulation.output_writers[:fields] = JLD2OutputWriter(model, (; u, v, w),
-                                                      schedule = AveragedTimeInterval(save_fields_interval, 
-                                                                                      window=average_window),
-                                                      filename = datapath*filename*".jld2",
-                                                      overwrite_existing = true,
-                                                      with_halos = true                           # for computation of derivatives at boundaries
-                                                      )
-
+simulation.output_writers[:fields] = JLD2OutputWriter(
+        model, (; 
+                u, v, w,
+                uu, vv, uv,
+                η, p, b,
+                ub, vb, wb,  
+        ),
+        schedule = AveragedTimeInterval(
+                save_fields_interval, 
+                window=average_window
+        ),
+        filename = datapath*filename*".jld2",
+        overwrite_existing = true,
+        with_halos = true,                           # for computation of derivatives at boundaries
+        init = init_save_some_metadata!
+)
 
 # action!
 run!(simulation)
