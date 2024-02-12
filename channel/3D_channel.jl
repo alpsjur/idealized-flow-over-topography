@@ -10,7 +10,7 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-stop_time = 10days
+stop_time = 3hours
 
 # Create grid
 underlying_grid = RectilinearGrid(
@@ -66,17 +66,17 @@ save(figurepath*"channel_bathymetry.png", fig)
 """
 
 # create model
-model = HydrostaticFreeSurfaceModel(; grid,
-                                    boundary_conditions=(u=u_bc, v=v_bc),
-                                    free_surface = ImplicitFreeSurface(),
-                                    momentum_advection = WENO(),
-                                    tracer_advection = WENO(),
-                                    closure = (horizontal_closure, vertical_closure),
-                                    coriolis = coriolis,
-                                    
-                                    buoyancy = BuoyancyTracer(),
-                                    tracers = :b,
-                                    )
+model = HydrostaticFreeSurfaceModel(; 
+        grid,
+        boundary_conditions=(u=u_bc, v=v_bc),
+        free_surface = ImplicitFreeSurface(),
+        momentum_advection = WENO(),
+        tracer_advection = WENO(),
+        closure = (horizontal_closure, vertical_closure),
+        coriolis = coriolis,
+        buoyancy = BuoyancyTracer(),
+        tracers = :b,
+)
 
 println(model)
 
@@ -120,12 +120,17 @@ vb = v*b
 wb = w*b
 
 # τbx
+τᵤᶻ_ib = Field(KernelFunctionOperation{Face, Center, Face}(conditional_bottom_ib_flux, grid,
+                                                          u.boundary_conditions.immersed, fcf, u, model.closure,
+                                                          model.diffusivity_fields, nothing, model.clock, fields(model)))
+compute!(τᵤᶻ_ib)
+
 # τby
 
 
 # logging simulation progress
 start_time = time_ns()
-progress(sim) = @printf("i: % 6d, sim time: % 5.2f, wall time: % 15s, max |u|: % 5.3f, max |v|: % 5.3f, max |w|: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
+progress(sim) = @printf("i: % 6d, sim time: % 15s, wall time: % 15s, max |u|: % 5.3f, max |v|: % 5.3f, max |w|: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
         sim.model.clock.iteration,
         prettytime(sim.model.clock.time),
         #sim.model.clock.time,
