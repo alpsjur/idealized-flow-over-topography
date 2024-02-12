@@ -125,15 +125,16 @@ wb = w*b
 
 # logging simulation progress
 start_time = time_ns()
-progress(sim) = @printf(
-  "i: % 6d, sim time: % 15s, wall time: % 15s, max speed: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
-  sim.model.clock.iteration,
-  prettytime(sim.model.clock.time),
-  #sim.model.clock.time,
-  prettytime(1e-9 * (time_ns() - start_time)),
-  maximum(abs, sqrt(u^2+v^2+w^2)),
-  maximum(abs, η),
-  prettytime(sim.Δt),
+progress(sim) = @printf("i: % 6d, sim time: % 5.2f, wall time: % 15s, max |u|: % 5.3f, max |v|: % 5.3f, max |w|: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
+        sim.model.clock.iteration,
+        #prettytime(sim.model.clock.time),
+        sim.model.clock.time,
+        prettytime(1e-9 * (time_ns() - start_time)),
+        maximum(abs, u),
+        maximum(abs, v),
+        maximum(abs, w),
+        maximum(abs, η),
+        prettytime(sim.Δt),
 )
 
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1))
