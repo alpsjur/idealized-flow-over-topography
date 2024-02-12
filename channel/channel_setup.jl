@@ -44,13 +44,13 @@ f = 1e-4
 coriolis = FPlane(f)
 
 
-decay_from_LR(bmax, LR, f) = (LR*abs(f)/(2))^2/bmax
+decay_from_LR(bmax, LR, f) = ((LR*abs(f)/(2))^2)/bmax
 
 
 # Stratification parameters
-bmax = 1                                    # Maximum buoyancy anomaly
-LR = 30kilometers                           # Deformation radius over deep ocean
-decay = 100meters#decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [m]
+bmax = 3e-2                                    # Maximum buoyancy anomaly
+LR = 35kilometers                           # Deformation radius over deep ocean
+decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [m]
 
 
 # Turbulence closures parameters for vertical and horizontal mixing
@@ -58,7 +58,7 @@ decay = 100meters#decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy
 νh = 100    # [m²/s] horizontal viscocity      Increase if simulation blows up
 κz = 1e-5   # [m²/s] vertical diffusivity
 νz = 1e-5   # [m²/s] vertical viscocity
-vertical_closure = ScalarDiffusivity(ν = νz, κ = κz)                  
+vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)                  
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 
 

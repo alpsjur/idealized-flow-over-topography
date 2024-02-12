@@ -38,7 +38,7 @@ scatter!(ax, zspacings(underlying_grid, Center()), znodes(underlying_grid, Cente
 
 ax = Axis(fig[1, 2], xlabel = "k index")
 ks = collect(1:51)
-zs = z_faces.(k)
+zs = z_faces.(ks)
 
 scatter!(ax, ks, zs)
 save(figurepath*"vertical_grid_spacing.png", fig)

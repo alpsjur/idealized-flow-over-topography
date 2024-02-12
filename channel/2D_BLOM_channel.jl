@@ -44,7 +44,7 @@ set!(model, b=initial_buoyancy)
 # plot initial profile
 figurepath = "channel/figures/"
 fig = Figure()
-axis = Axis(fig[1,1], xlabel = "Buoyancy", ylabel = "z")
+axis = Axis(fig[1,1], xlabel = "Buoyancy [m/s²]", ylabel = "z [m]")
 
 
 z = znodes(model.tracers.b)
@@ -140,7 +140,7 @@ progress(sim) = @printf(
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "2D_BLOM_channel_highDiffusivity"
+filename = "2D_BLOM_channel"
 datapath = "channel/data/"
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
