@@ -119,6 +119,7 @@ ub = u*b
 vb = v*b 
 wb = w*b
 
+"""
 # τbx
 τᵤᶻ_ib = Field(KernelFunctionOperation{Face, Center, Face}(conditional_bottom_ib_flux, grid,
                                                           u.boundary_conditions.immersed, fcf, u, model.closure,
@@ -126,7 +127,7 @@ wb = w*b
 compute!(τᵤᶻ_ib)
 
 # τby
-
+"""
 
 # logging simulation progress
 start_time = time_ns()
