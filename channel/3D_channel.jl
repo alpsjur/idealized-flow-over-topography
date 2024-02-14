@@ -10,7 +10,7 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-stop_time = 3hours
+stop_time = 100days
 
 # Create grid
 underlying_grid = RectilinearGrid(
@@ -119,15 +119,16 @@ ub = u*b
 vb = v*b 
 wb = w*b
 
-"""
 # τbx
+# Mulig rask og skitten løsning : regne ut drag for hele velocity-feltet, tenke på boundary seinere
+# Gir ∂τ∂z for hele domenet.
+# Vi vil bare ha τ på boundary 
 τᵤᶻ_ib = Field(KernelFunctionOperation{Face, Center, Face}(conditional_bottom_ib_flux, grid,
                                                           u.boundary_conditions.immersed, fcf, u, model.closure,
                                                           model.diffusivity_fields, nothing, model.clock, fields(model)))
 compute!(τᵤᶻ_ib)
 
 # τby
-"""
 
 # logging simulation progress
 start_time = time_ns()
@@ -146,7 +147,7 @@ progress(sim) = @printf("i: % 6d, sim time: % 15s, wall time: % 15s, max |u|: % 
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "3D_BLOM_channel"
+filename = "3D_channel"
 datapath = "channel/data/"
 
 
