@@ -119,6 +119,7 @@ ub = u*b
 vb = v*b 
 wb = w*b
 
+"""
 # τbx
 # Mulig rask og skitten løsning : regne ut drag for hele velocity-feltet, tenke på boundary seinere
 # Gir ∂τ∂z for hele domenet.
@@ -129,6 +130,7 @@ wb = w*b
 compute!(τᵤᶻ_ib)
 
 # τby
+"""
 
 # logging simulation progress
 start_time = time_ns()
