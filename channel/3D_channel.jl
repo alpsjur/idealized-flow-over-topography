@@ -10,7 +10,7 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-#stop_time = 100days
+stop_time = 3hours
 
 # Create grid
 underlying_grid = RectilinearGrid(
@@ -29,9 +29,9 @@ grid = ImmersedBoundaryGrid(underlying_grid,
                             PartialCellBottom(hᵢ)
                             )
 
+
 """
 # visualize vertical grid spacing
-figurepath = "channel/figures/"
 fig = Figure()
 ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Vertical spacing (m)")
 
@@ -108,30 +108,6 @@ simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
 #define diagnostics 
 include("diagnostics.jl")
 
-u, v, w = model.velocities
-p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
-η = model.free_surface.η
-b = model.tracers.b
-
-uu = u*u 
-vv = v*v
-uv = u*v
-ub = u*b
-vb = v*b 
-wb = w*b
-
-"""
-# τbx
-# Mulig rask og skitten løsning : regne ut drag for hele velocity-feltet, tenke på boundary seinere
-# Gir ∂τ∂z for hele domenet.
-# Vi vil bare ha τ på boundary 
-τᵤᶻ_ib = Field(KernelFunctionOperation{Face, Center, Face}(conditional_bottom_ib_flux, grid,
-                                                          u.boundary_conditions.immersed, fcf, u, model.closure,
-                                                          model.diffusivity_fields, nothing, model.clock, fields(model)))
-compute!(τᵤᶻ_ib)
-
-# τby
-"""
 
 # logging simulation progress
 start_time = time_ns()

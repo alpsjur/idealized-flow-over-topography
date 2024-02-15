@@ -34,38 +34,55 @@ function init_save_some_metadata!(file, model)
     return nothing
 end
 
+
+u, v, w = model.velocities
+p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
+η = model.free_surface.η
+b = model.tracers.b
+
+uu = u*u 
+vv = v*v
+uv = u*v
+ub = u*b
+vb = v*b 
+wb = w*b
+
+
+#bottom drag
+#Se her : https://github.com/CliMA/Oceananigans.jl/discussions/3081
+
+using Oceananigans.BoundaryConditions: getbc
+using Oceananigans: fields
+
+# Boundary condition extractor in "kernel function form"
+@inline kernel_getbc(i, j, k, grid, boundary_condition, clock, fields) =
+    getbc(boundary_condition, i, j, grid, clock, fields)
+
+# Kernel arguments
+clock = model.clock
+model_fields = merge(fields(model), model.auxiliary_fields)
+
+u_bc = u.boundary_conditions.bottom
+v_bc = v.boundary_conditions.bottom
+
+u_im_bc = u.boundary_conditions.immersed.bottom
+v_im_bc = v.boundary_conditions.immersed.bottom
+
+# Build operations. these can be passed to OutputWriters
+u_bc_op = KernelFunctionOperation{Face, Center, Nothing}(kernel_getbc, grid, u_bc, clock, model_fields)
+v_bc_op = KernelFunctionOperation{Center, Face, Nothing}(kernel_getbc, grid, v_bc, clock, model_fields)
+
+u_im_bc_op = KernelFunctionOperation{Face, Center, Nothing}(kernel_getbc, grid, u_im_bc, clock, model_fields)
+v_im_bc_op = KernelFunctionOperation{Center, Face, Nothing}(kernel_getbc, grid, v_im_bc, clock, model_fields)
+
+
 """
-#bottom friction force
-#regne ut ved hjelp av likning for drag definert tidligere? Hvordan finne u ved bunn?
+# Build Fields
+u_bc_field = Field(u_bc_op)
+v_bc_field = Field(v_bc_op)
 
-### Code from https://github.com/CliMA/Oceananigans.jl/discussions/3423
-fcf = (Face(), Center(), Face())
+u_im_bc_field = Field(u_im_bc_op)
+v_im_bc_field = Field(v_im_bc_op)
 
-using Oceananigans.ImmersedBoundaries: conditional_flux, bottom_ib_flux
-using Oceananigans.Operators: index_left
-using Oceananigans.BoundaryConditions: flip
-
-
-@inline function conditional_bottom_ib_flux(i, j, k, ibg, bc, loc, c, closure, K, id, clock, fields)
-    q̃ᴮ = bottom_ib_flux(i, j, k, ibg, bc.bottom, loc, c, closure, K, id, clock, fields)
-
-    iᵂ, jˢ, kᴮ = map(index_left,  (i, j, k), loc) # Broadcast instead of map causes inference failure
-    LX, LY, LZ = loc
-    return conditional_flux(i, j, kᴮ, ibg, LX, LY, flip(LZ), q̃ᴮ, zero(eltype(ibg)))
-end
-
-
-# maske for boundary nodes
-using Oceananigans.Grids: boundary_node
-boundary_node_ccf(i, j, k, grid) = boundary_node(i, j, k, grid, Center(), Center(), Face())
-boundary_node_ccf_op = KernelFunctionOperation{Center, Center, Face}(boundary_node_ccf, grid)
-bn = Field(boundary_node_ccf_op)
-
-using Oceananigans.Fields: condition_operand
-τb = immersed_drag_u()
-ub = condition_operand(u; condition=bn)
+#Field(u_bc_field+u_im_bc_field)
 """
-
-
-
-

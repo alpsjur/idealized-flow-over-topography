@@ -65,62 +65,6 @@ simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
 #define diagnostics 
 include("diagnostics.jl")
 
-u, v, w = model.velocities
-p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
-η = model.free_surface.η
-b = model.tracers.b
-
-uu = u*u 
-vv = v*v
-uv = u*v
-ub = u*b
-vb = v*b 
-wb = w*b
-
-
-
-"""
-### Code from https://github.com/CliMA/Oceananigans.jl/discussions/3423
-fcf = (Face(), Center(), Face())
-
-
-get_qᵂ(i, j, k, ibg, args...)
-get_qᴱ(i, j, k, ibg, args...)
-get_qˢ(i, j, k, ibg, args...)
-get_qᴺ(i, j, k, ibg, args...)
-get_qᴮ(i, j, k, ibg, args...)
-get_qᵀ(i, j, k, ibg, args...)
-
- @inline function immersed_flux_divergence(i, j, k, ibg::GFIBG, bc, loc, c, closure, K, id, clock, fields) 
-     return div(i, j, k, ibg, loc, get_qᵂ(...), get_qᴱ(...), get_qˢ(...), get_qᴺ(...), get_qᴮ(...), get_qᵀ(...)) 
- end 
-
-using Oceananigans.ImmersedBoundaries: conditional_flux, bottom_ib_flux
-using Oceananigans.Operators: index_left
-using Oceananigans.BoundaryConditions: flip
-@inline function conditional_bottom_ib_flux(i, j, k, ibg, bc, loc, c, closure, K, id, clock, fields)
-    q̃ᴮ = bottom_ib_flux(i, j, k, ibg, bc.bottom, loc, c, closure, K, id, clock, fields)
-
-    iᵂ, jˢ, kᴮ = map(index_left,  (i, j, k), loc) # Broadcast instead of map causes inference failure
-    LX, LY, LZ = loc
-    return conditional_flux(i, j, kᴮ, ibg, LX, LY, flip(LZ), q̃ᴮ, zero(eltype(ibg)))
-end
-
-τᵤᶻ_ib = Field(KernelFunctionOperation{Face, Center, Face}(conditional_bottom_ib_flux, grid,
-                                                          u.boundary_conditions.immersed, fcf, u, model.closure,
-                                                          model.diffusivity_fields, nothing, model.clock, fields(model)))
-compute!(τᵤᶻ_ib)
-
-using Oceananigans.Grids: boundary_node
-boundary_node_ccf(i, j, k, grid) = boundary_node(i, j, k, grid, Center(), Center(), Face())
-boundary_node_ccf_op = KernelFunctionOperation{Center, Center, Face}(boundary_node_ccf, grid)
-bn = Field(boundary_node_ccf_op)
-
-τb = Average(τᵤᶻ_ib, dims=3, condition=boundary_node_ccf_op)
-
-
-###
-"""
 
 # logging simulation progress
 start_time = time_ns()
