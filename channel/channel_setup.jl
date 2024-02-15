@@ -107,15 +107,15 @@ hᵢ(y) = hᵢ(1, y)
 drag_u(x, y, t, u, v, Cd) = -Cd*√(u^2+v^2)*u
 drag_v(x, y, t, u, v, Cd) = -Cd*√(u^2+v^2)*v
 
-drag_u(y, t, u, v, R) = drag_u(1, y, t, u, v, Cd)
-drag_v(y, t, u, v, R) = drag_v(1, y, t, u, v, Cd)
+drag_u(y, t, u, v, Cd) = drag_u(1, y, t, u, v, Cd)
+drag_v(y, t, u, v, Cd) = drag_v(1, y, t, u, v, Cd)
 
 # spesify drag on immersed boundary, note different arguments from bottom drag above
-immersed_drag_u(x, y, z, t, u, v, R) = -R*u*√(u^2*v^2)
-immersed_drag_v(x, y, z, t, u, v, R) = -R*v*√(u^2*v^2)
+immersed_drag_u(x, y, z, t, u, v, Cd) = -Cd*u*√(u^2+v^2)
+immersed_drag_v(x, y, z, t, u, v, Cd) = -Cd*v*√(u^2+v^2)
 
-immersed_drag_u(y, z, t, u, v, R) = immersed_drag_u(1, y, z, t, u, v, R)
-immersed_drag_v(y, z, t, u, v, R) = immersed_drag_v(1, y, z, t, u, v, R)
+immersed_drag_u(y, z, t, u, v, Cd) = immersed_drag_u(1, y, z, t, u, v, Cd)
+immersed_drag_v(y, z, t, u, v, Cd) = immersed_drag_v(1, y, z, t, u, v, Cd)
 
 # create bottom boundary conditions
 drag_u_bc = FluxBoundaryCondition(drag_u, field_dependencies=(:u, :v), parameters=Cd)
