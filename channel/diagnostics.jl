@@ -36,9 +36,8 @@ end
 
 """
 #bottom friction force
-"""
-regne ut ved hjelp av likning for drag definert tidligere? Hvordan finne u ved bunn?
-"""
+#regne ut ved hjelp av likning for drag definert tidligere? Hvordan finne u ved bunn?
+
 ### Code from https://github.com/CliMA/Oceananigans.jl/discussions/3423
 fcf = (Face(), Center(), Face())
 
@@ -66,7 +65,7 @@ using Oceananigans.Fields: condition_operand
 τb = immersed_drag_u()
 ub = condition_operand(u; condition=bn)
 """
-###
+
 
 
 
