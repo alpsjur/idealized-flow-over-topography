@@ -111,8 +111,8 @@ drag_u(y, t, u, v, Cd) = drag_u(1, y, t, u, v, Cd)
 drag_v(y, t, u, v, Cd) = drag_v(1, y, t, u, v, Cd)
 
 # spesify drag on immersed boundary, note different arguments from bottom drag above
-immersed_drag_u(x, y, z, t, u, v, Cd) = -Cd*u*√(u^2+v^2)
-immersed_drag_v(x, y, z, t, u, v, Cd) = -Cd*v*√(u^2+v^2)
+immersed_drag_u(x, y, z, t, u, v, Cd) = -Cd*√(u^2+v^2)*u
+immersed_drag_v(x, y, z, t, u, v, Cd) = -Cd*√(u^2+v^2)*v
 
 immersed_drag_u(y, z, t, u, v, Cd) = immersed_drag_u(1, y, z, t, u, v, Cd)
 immersed_drag_v(y, z, t, u, v, Cd) = immersed_drag_v(1, y, z, t, u, v, Cd)
@@ -128,7 +128,7 @@ immersed_u_bc = ImmersedBoundaryCondition(bottom = immersed_drag_u_bc)
 immersed_v_bc = ImmersedBoundaryCondition(bottom = immersed_drag_v_bc)
 
 
-# spesify surface forcing
+# spesify surface forcing. Gradualy increase forcing over 10 days, then constant
 τx(x, y, t, τ) = τ*tanh(t/(10days))
 τy(x, y, t, τ) = 0
 
