@@ -99,8 +99,8 @@ save(figurepath*"initial_buoyancy.png", fig)
 simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
 
 # test time step wizard
-#wizard = TimeStepWizard(cfl=0.2)
-#simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(1))
+wizard = TimeStepWizard(cfl=0.2)
+simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(1))
 
 
 #define diagnostics  (Which to save?)
