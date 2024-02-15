@@ -9,7 +9,7 @@ using CUDA
 
 # Simulation parameters
 Δt = 30second                   # Time step size
-stop_time = 200days             # Simulation stop time
+stop_time = 400days             # Simulation stop time
 save_fields_interval = 1day     # Interval for saving output fields
 average_window = 1day           # Averaging window for output data
 
@@ -56,8 +56,8 @@ decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [
 # Turbulence closures parameters for vertical and horizontal mixing
 κh = 100    # [m²/s] horizontal diffusivity
 νh = 100    # [m²/s] horizontal viscocity      Increase if simulation blows up
-κz = 1e-4   # [m²/s] vertical diffusivity
-νz = 1e-4   # [m²/s] vertical viscocity
+κz = 1e-5   # [m²/s] vertical diffusivity
+νz = 1e-5   # [m²/s] vertical viscocity
 vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)                  
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 

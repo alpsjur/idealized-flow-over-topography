@@ -10,7 +10,7 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-stop_time = 100days
+#stop_time = 100days
 
 # Create grid
 underlying_grid = RectilinearGrid(
@@ -81,7 +81,8 @@ model = HydrostaticFreeSurfaceModel(;
 println(model)
 
 # set initial density profile
-set!(model, b=initial_buoyancy)              
+#set!(model, b=initial_buoyancy)  
+set!(model, b=0)              
 
 """
 # plot initial profile
@@ -149,7 +150,7 @@ progress(sim) = @printf("i: % 6d, sim time: % 15s, wall time: % 15s, max |u|: % 
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(100))
 
 # write output to file
-filename = "3D_channel"
+filename = "3D_channel_nostrat"
 datapath = "channel/data/"
 
 
