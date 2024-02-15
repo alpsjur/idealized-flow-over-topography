@@ -29,14 +29,44 @@ function ∂v∂t(model)
     return (3/2 + χ) * Gⁿ - (1/2 + χ) * G⁻
 end
 
-#bottom friction force
-"""
-regne ut ved hjelp av likning for drag definert tidligere? Hvordan finne u ved bunn?
-"""
-
-
-
 function init_save_some_metadata!(file, model)
     file["author"] = "Anna Lina Sjur"
     return nothing
 end
+
+"""
+#bottom friction force
+"""
+regne ut ved hjelp av likning for drag definert tidligere? Hvordan finne u ved bunn?
+"""
+### Code from https://github.com/CliMA/Oceananigans.jl/discussions/3423
+fcf = (Face(), Center(), Face())
+
+using Oceananigans.ImmersedBoundaries: conditional_flux, bottom_ib_flux
+using Oceananigans.Operators: index_left
+using Oceananigans.BoundaryConditions: flip
+
+
+@inline function conditional_bottom_ib_flux(i, j, k, ibg, bc, loc, c, closure, K, id, clock, fields)
+    q̃ᴮ = bottom_ib_flux(i, j, k, ibg, bc.bottom, loc, c, closure, K, id, clock, fields)
+
+    iᵂ, jˢ, kᴮ = map(index_left,  (i, j, k), loc) # Broadcast instead of map causes inference failure
+    LX, LY, LZ = loc
+    return conditional_flux(i, j, kᴮ, ibg, LX, LY, flip(LZ), q̃ᴮ, zero(eltype(ibg)))
+end
+
+
+# maske for boundary nodes
+using Oceananigans.Grids: boundary_node
+boundary_node_ccf(i, j, k, grid) = boundary_node(i, j, k, grid, Center(), Center(), Face())
+boundary_node_ccf_op = KernelFunctionOperation{Center, Center, Face}(boundary_node_ccf, grid)
+bn = Field(boundary_node_ccf_op)
+
+using Oceananigans.Fields: condition_operand
+τb = immersed_drag_u()
+ub = condition_operand(u; condition=bn)
+"""
+###
+
+
+
