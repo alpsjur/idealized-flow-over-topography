@@ -5,7 +5,7 @@ using Printf
 using JLD2
 
 # Define the path to the saved output file containing simulation data
-filename = "channel/data/3D_channel.jld2"
+filename = "channel/data/3D_channel_nostrat.jld2"
 
 file = jldopen(filename)
 xindex = 1
@@ -122,7 +122,7 @@ band!(ax_b, yc, minimum(h), h, alpha=0.5, color=:lightgray)
 frames = 1:length(times)
 
 # Record the animation, updating the figure for each time step
-CairoMakie.record(fig, "channel/animations/3D_channel_slice.mp4", frames, framerate=8) do i
+CairoMakie.record(fig, "channel/animations/3D_channel_nonstrat_slice.mp4", frames, framerate=8) do i
     msg = string("Plotting frame ", i, " of ", frames[end])
     print(msg * " \r")  # Log progress without creating a new line for each frame
     n[] = i             # Update the observable to the current frame index

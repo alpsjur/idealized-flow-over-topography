@@ -117,8 +117,9 @@ ar_u = arrows!(ax_v, yc[1:ystep:end], zc, vₙ, wₙ,
     lengthscale = 1e6,
     #arrowcolor=sₙ, linecolor=sₙ, colorrange = (0, slim), colormap = :speed
 )
-Colorbar(fig[3, 2], hm_s)
 band!(ax_v, yc, minimum(h), h, alpha=0.5, color=:lightgray)
+Colorbar(fig[3, 2], hm_s)
+
 
 # Create a heatmap for the sparce velocity field
 hm_s = heatmap!(ax_vs, yc, zc, sₙ; colorrange = (0, slim*0.1), colormap = :speed)
@@ -126,8 +127,9 @@ ar_u = arrows!(ax_vs, yc[1:ystep:end], zc[1:zstep:end], vsₙ, wsₙ,
     lengthscale = 5e7,
     #arrowcolor=sₙ, linecolor=sₙ, colorrange = (0, slim), colormap = :speed
 )
-Colorbar(fig[4:5, 2], hm_s)
 band!(ax_vs, yc, minimum(h), h, alpha=0.5, color=:lightgray)
+Colorbar(fig[4:5, 2], hm_s)
+
 
 """
 # Create a heatmap for the buoyancy field
