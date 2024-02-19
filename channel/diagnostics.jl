@@ -77,7 +77,7 @@ u_im_bc_op = KernelFunctionOperation{Face, Center, Nothing}(kernel_getbc, grid, 
 v_im_bc_op = KernelFunctionOperation{Center, Face, Nothing}(kernel_getbc, grid, v_im_bc, clock, model_fields)
 
 
-"""
+
 # Build Fields
 u_bc_field = Field(u_bc_op)
 v_bc_field = Field(v_bc_op)
@@ -86,7 +86,7 @@ u_im_bc_field = Field(u_im_bc_op)
 v_im_bc_field = Field(v_im_bc_op)
 
 #Field(u_bc_field+u_im_bc_field)
-"""
+
 
 # logging simulation progress
 start_time = time_ns()
