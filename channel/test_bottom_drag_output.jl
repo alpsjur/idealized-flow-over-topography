@@ -96,7 +96,9 @@ datapath = "channel/data/"
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
         model, (; 
-        u_bc_op, v_bc_op, u_im_bc_op, v_im_bc_op
+        u, v, 
+        u_bc_op, v_bc_op, u_im_bc_op, v_im_bc_op,
+        u_bc_field, v_bc_field, u_im_bc_field, v_im_bc_field,
         ),
         schedule = AveragedTimeInterval(
                 save_fields_interval, 
