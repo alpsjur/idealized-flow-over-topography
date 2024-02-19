@@ -115,11 +115,11 @@ simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 filename = "3D_channel_nostrat"
 datapath = "channel/data/"
 
-U = Average(u, dims=(1))
-V = Average(v, dims=(1))
-W = Average(w, dims=(1))
-B = Average(b, dims=(1))
-H = Average(η, dims=(1))
+U = Average(u, dims=1)
+V = Average(v, dims=1)
+W = Average(w, dims=1)
+B = Average(b, dims=1)
+H = Average(η, dims=1)
 
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
