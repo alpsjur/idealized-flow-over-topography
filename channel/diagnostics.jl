@@ -40,6 +40,7 @@ p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans
 η = model.free_surface.η
 b = model.tracers.b
 
+
 uu = u*u 
 vv = v*v
 uv = u*v

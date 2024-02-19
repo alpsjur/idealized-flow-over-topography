@@ -10,8 +10,7 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-stop_time = 3hours
-
+stop_time = 200days
 # Create grid
 underlying_grid = RectilinearGrid(
         architecture;
@@ -116,19 +115,40 @@ simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 filename = "3D_channel_nostrat"
 datapath = "channel/data/"
 
+U = Average(u, dims=(1))
+V = Average(v, dims=(1))
+W = Average(w, dims=(1))
+B = Average(b, dims=(1))
+H = Average(η, dims=(1))
+
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
         model, (; 
                 u, v, w,
-                uu, vv, uv,
+                #uu, vv, uv,
                 η, p, b,
-                ub, vb, wb,  
+                #ub, vb, wb,  
         ),
         schedule = AveragedTimeInterval(
                 save_fields_interval, 
                 window=average_window
         ),
         filename = datapath*filename*".jld2",
+        overwrite_existing = true,
+        with_halos = true,                           # for computation of derivatives at boundaries
+        init = init_save_some_metadata!
+)
+
+simulation.output_writers[:averages] = JLD2OutputWriter(
+        model, (; 
+                U, V, W,
+                H, B, 
+        ),
+        schedule = AveragedTimeInterval(
+                save_fields_interval, 
+                window=average_window
+        ),
+        filename = datapath*filename*"_average"*".jld2",
         overwrite_existing = true,
         with_halos = true,                           # for computation of derivatives at boundaries
         init = init_save_some_metadata!
