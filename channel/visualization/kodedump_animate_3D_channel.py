@@ -78,3 +78,50 @@ fig.update_layout(
 )
 
 fig.show()
+
+###
+
+import plotly.graph_objects as go
+import numpy as np
+
+# Example vector field data over time
+# In practice, replace these with your actual data arrays
+times = np.linspace(0, 1, num=5)  # Time steps
+x, y, z = np.meshgrid(np.arange(-5, 6), np.arange(-5, 6), np.arange(-5, 6))
+u = np.sin(x) * np.cos(y) * np.cos(z)
+v = -np.cos(x) * np.sin(y) * np.cos(z)
+w = (np.sqrt(2)/2) * np.sin(z)
+
+frames = []
+
+for t in times:
+    # Modify u, v, w based on time t if your field changes over time
+    # This example uses static fields for simplicity
+    frame = go.Frame(data=[go.Streamtube(x=x.flatten(), y=y.flatten(), z=z.flatten(),
+                                         u=u.flatten(), v=v.flatten(), w=w.flatten(),
+                                         starts=dict(x=[0], y=[0], z=[0])  # Adjust start points as needed
+                                         )],
+                     name=str(t))
+    frames.append(frame)
+
+fig = go.Figure(frames=frames)
+
+# Add play and pause buttons
+fig.update_layout(updatemenus=[dict(type='buttons',
+                                    showactive=False,
+                                    y=0,
+                                    x=1.05,
+                                    xanchor='left',
+                                    yanchor='bottom',
+                                    buttons=[dict(label='Play',
+                                                  method='animate',
+                                                  args=[None, dict(frame=dict(duration=500, redraw=True), 
+                                                                   fromcurrent=True, 
+                                                                   mode='immediate')]),
+                                             dict(label='Pause',
+                                                  method='animate',
+                                                  args=[[None], dict(frame=dict(duration=0, redraw=False), 
+                                                                     mode='immediate')])])])
+
+# Show the first frame to start
+fig.show()
