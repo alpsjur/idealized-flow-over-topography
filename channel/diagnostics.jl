@@ -37,8 +37,10 @@ end
 
 u, v, w = model.velocities
 p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
-η = model.free_surface.η
+η′ = model.free_surface.η
 b = model.tracers.b
+
+η = Average(η′, dims=3)
 
 
 uu = u*u 
@@ -47,6 +49,18 @@ uv = u*v
 ub = u*b
 vb = v*b 
 wb = w*b
+
+
+# Info for NetCDFOutputWriter 
+output_attributes = Dict(
+    "uu"  => Dict("long_name" => "Velocity advection u*u cross term", "units" => "m2/s2"),
+    "vv"  => Dict("long_name" => "Velocity advection v*v cross term", "units" => "m2/s2"),
+    "uv"  => Dict("long_name" => "Velocity advection u*v cross term", "units" => "m2/s2"),
+    "ub"  => Dict("long_name" => "Buoyancy advection u*b cross term", "units" => "m2/s3"),
+    "vb"  => Dict("long_name" => "Buoyancy advection v*b cross term", "units" => "m2/s3"),
+    "wb"  => Dict("long_name" => "Buoyancy advection w*b cross term", "units" => "m2/s3"),
+)
+
 
 
 #bottom drag
@@ -98,6 +112,6 @@ progress(sim) = @printf("i: % 6d, sim time: % 15s, wall time: % 15s, max |u|: % 
         maximum(abs, u),
         maximum(abs, v),
         maximum(abs, w),
-        maximum(abs, η),
+        maximum(abs, η′),
         prettytime(sim.Δt),
 )

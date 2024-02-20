@@ -10,8 +10,8 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-#stop_time = 200days
-stop_time = 3hours
+stop_time = 200days
+
 # Create grid
 underlying_grid = RectilinearGrid(
         architecture;
@@ -107,6 +107,7 @@ simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
 #define diagnostics  (Which to save?)
 #define diagnostics 
 include("diagnostics.jl")
+#output_attributes=output_attributes,
 
 
 # logging simulation progress
@@ -120,14 +121,15 @@ U = Average(u, dims=1)
 V = Average(v, dims=1)
 W = Average(w, dims=1)
 B = Average(b, dims=1)
-H = Average(η, dims=(1,3))
+H = Average(η′, dims=(1,3))
 
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
         model, (; 
                 u, v, w,
                 #uu, vv, uv,
-                η, p, b,
+                η, 
+                p, b,
                 #ub, vb, wb,  
         ),
         schedule = AveragedTimeInterval(
@@ -143,7 +145,8 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
 simulation.output_writers[:averages] = JLD2OutputWriter(
         model, (; 
                 U, V, W,
-                H, B, 
+                H, 
+                B, 
         ),
         schedule = AveragedTimeInterval(
                 save_fields_interval, 
@@ -154,6 +157,35 @@ simulation.output_writers[:averages] = JLD2OutputWriter(
         with_halos = true,                           # for computation of derivatives at boundaries
         init = init_save_some_metadata!
 )
+
+
+# Remove netCDF file if it already exists 
+if isfile(datapath*filename*".nc")
+        rm(datapath*filename*".nc")
+end
+    
+
+# Writer for netCDF file format
+simulation.output_writers[:netCDF] = NetCDFOutputWriter(
+        model, 
+        Dict(
+                "u" => u,
+                "v" => v,
+                "w" => w,
+                "b" => b,
+                "p" => p,
+                "eta" => η,
+        ),
+        #output_attributes=output_attributes,
+        schedule = AveragedTimeInterval(
+                save_fields_interval, 
+                window=average_window
+        ),
+        filename = datapath*filename*".nc",
+        overwrite_existing = true,
+        with_halos = true,                     # for computation of derivatives at boundaries. 
+)
+
 
 # action!
 run!(simulation)
