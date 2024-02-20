@@ -38,7 +38,7 @@ end
 u, v, w = model.velocities
 p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
 η′ = model.free_surface.η
-b = model.tracers.b
+#b = model.tracers.b
 
 η = Average(η′, dims=3)
 
@@ -46,9 +46,9 @@ b = model.tracers.b
 uu = u*u 
 vv = v*v
 uv = u*v
-ub = u*b
-vb = v*b 
-wb = w*b
+#ub = u*b
+#vb = v*b 
+#wb = w*b
 
 
 # Info for NetCDFOutputWriter 

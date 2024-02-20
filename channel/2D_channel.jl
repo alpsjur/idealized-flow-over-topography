@@ -33,12 +33,12 @@ model =  HydrostaticFreeSurfaceModel(;
   closure = (horizontal_closure, vertical_closure),
   coriolis = coriolis,
 
-  buoyancy = BuoyancyTracer(),
-  tracers = :b,
+  #buoyancy = BuoyancyTracer(),
+  #tracers = :b,
 )
 
 #set!(model, b=initial_buoyancy)  
-set!(model, b=1) 
+set!(model, T=12, S=32) 
 
 """
 # plot initial profile

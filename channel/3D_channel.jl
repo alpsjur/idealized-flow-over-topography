@@ -75,15 +75,15 @@ model = HydrostaticFreeSurfaceModel(;
         tracer_advection = WENO(),
         closure = (horizontal_closure, vertical_closure),
         coriolis = coriolis,
-        buoyancy = BuoyancyTracer(),
-        tracers = :b,
+        #buoyancy = BuoyancyTracer(),
+        #tracers = :b,
 )
 
 println(model)
 
 # set initial density profile
 #set!(model, b=initial_buoyancy)  
-set!(model, b=1)              
+set!(model, T=12, S=32)              
 
 """
 # plot initial profile
@@ -130,7 +130,8 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
                 u, v, w,
                 #uu, vv, uv,
                 η, 
-                p, b,
+                p, 
+                #b,
                 #ub, vb, wb,  
         ),
         schedule = AveragedTimeInterval(
@@ -147,7 +148,7 @@ simulation.output_writers[:averages] = JLD2OutputWriter(
         model, (; 
                 U, V, W,
                 H, 
-                B, 
+                #B, 
         ),
         schedule = AveragedTimeInterval(
                 save_fields_interval, 
@@ -173,7 +174,7 @@ simulation.output_writers[:netCDF] = NetCDFOutputWriter(
                 "u" => u,
                 "v" => v,
                 "w" => w,
-                "b" => b,
+                #"b" => b,
                 "p" => p,
                 "η" => η,
         ),
