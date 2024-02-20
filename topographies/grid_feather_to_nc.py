@@ -1,11 +1,14 @@
 import feather as f
 import xarray as xr
+import sys
 
-file = "2D_channel_nostrat"
-datapath = "topographies/data/"
+file = sys.argv[1]
+#file = "3D_channel_nostrat"
+datapath = "data/"
+#datapath = "topographies/data/"
 
-x = f.read_dataframe(datapath+"x.feather").values[0]
-y = f.read_dataframe(datapath+"y.feather").values[:,0]
+x = f.read_dataframe(datapath+"x.feather").values.flatten()
+y = f.read_dataframe(datapath+"y.feather").values.flatten()
 h = f.read_dataframe(datapath+"h.feather").values
 
 ds = xr.Dataset(

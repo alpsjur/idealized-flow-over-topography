@@ -3,10 +3,10 @@ using Feather
 using  DataFrames
 using Oceananigans
 
-datapath = "channel/data/"
-filename = "2D_channel_nostrat.jld2"
+datapath = "../channel/data/"
+filename = ARGS[1]*".jld2"
 
-outpath = "topographies/data/"
+outpath = "data/"
 
 # read time series to extract grid from
 ts = FieldTimeSeries(datapath*filename, "b")
