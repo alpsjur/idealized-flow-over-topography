@@ -39,6 +39,7 @@ u, v, w = model.velocities
 p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
 η′ = model.free_surface.η
 #b = model.tracers.b
+h = model.grid.immersed_boundary.bottom_height
 
 η = Average(η′, dims=3)
 
@@ -51,8 +52,11 @@ uv = u*v
 #wb = w*b
 
 
+dims = Dict("h" => ("xC", "yC"))
+
 # Info for NetCDFOutputWriter 
 output_attributes = Dict(
+    "h"  => Dict("long_name" => "Bottom height", "units" => "m"),
     "η"  => Dict("long_name" => "Free surface height", "units" => "m"),
     "p"  => Dict("long_name" => "Pressure", "units" => "N/m²"),
     "uu"  => Dict("long_name" => "Velocity advection u*u", "units" => "m²/s²"),

@@ -121,7 +121,7 @@ datapath = "channel/data/"
 U = Average(u, dims=1)
 V = Average(v, dims=1)
 W = Average(w, dims=1)
-B = Average(b, dims=1)
+#B = Average(b, dims=1)
 H = Average(η′, dims=(1,3))
 
 
@@ -186,6 +186,20 @@ simulation.output_writers[:netCDF] = NetCDFOutputWriter(
         filename = datapath*filename*".nc",
         overwrite_existing = true,
         with_halos = true,                     # for computation of derivatives at boundaries. 
+)
+
+# Writer for netCDF file format
+simulation.output_writers[:grid] = NetCDFOutputWriter(
+        model, 
+        Dict(
+                "h" => h,
+        ),
+        dimensions=dims,
+        output_attributes=output_attributes,
+        schedule = SpecifiedTimes([0]),
+        filename = datapath*filename*"_bottom_height.nc",
+        overwrite_existing = true,
+        with_halos = true,                     
 )
 
 
