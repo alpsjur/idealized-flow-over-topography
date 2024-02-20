@@ -57,7 +57,7 @@ dims = Dict("h" => ("xC", "yC"))
 # Info for NetCDFOutputWriter 
 output_attributes = Dict(
     "h"  => Dict("long_name" => "Bottom height", "units" => "m"),
-    "η"  => Dict("long_name" => "Free surface height", "units" => "m"),
+    "eta"  => Dict("long_name" => "Free surface height", "units" => "m"),
     "p"  => Dict("long_name" => "Pressure", "units" => "N/m²"),
     "uu"  => Dict("long_name" => "Velocity advection u*u", "units" => "m²/s²"),
     "vv"  => Dict("long_name" => "Velocity advection v*v", "units" => "m²/s²"),

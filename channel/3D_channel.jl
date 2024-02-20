@@ -176,7 +176,7 @@ simulation.output_writers[:netCDF] = NetCDFOutputWriter(
                 "w" => w,
                 #"b" => b,
                 "p" => p,
-                "η" => η,
+                "eta" => η,
         ),
         output_attributes=output_attributes,
         schedule = AveragedTimeInterval(
