@@ -72,7 +72,7 @@ println(model)
 
 # set initial density profile
 #set!(model, b=initial_buoyancy)  
-set!(model, b=0)   
+set!(model, b=1)   
 
 # create simulations
 simulation = Simulation(model, Δt=Δt, stop_time=stop_time)
@@ -96,7 +96,7 @@ datapath = "channel/data/"
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
         model, (; 
-        u, v, 
+        u, v, w,
         u_bc_op, v_bc_op, u_im_bc_op, v_im_bc_op,
         u_bc_field, v_bc_field, u_im_bc_field, v_im_bc_field,
         ),

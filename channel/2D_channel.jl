@@ -38,7 +38,7 @@ model =  HydrostaticFreeSurfaceModel(;
 )
 
 #set!(model, b=initial_buoyancy)  
-set!(model, b=0) 
+set!(model, b=1) 
 
 """
 # plot initial profile
