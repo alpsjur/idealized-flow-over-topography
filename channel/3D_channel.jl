@@ -11,6 +11,7 @@ include("channel_setup.jl")
 Nx = 10
 Lx = dx*Nx
 stop_time = 200days
+#stop_time = 3*Δt
 
 # Create grid
 underlying_grid = RectilinearGrid(
@@ -82,7 +83,7 @@ println(model)
 
 # set initial density profile
 #set!(model, b=initial_buoyancy)  
-set!(model, b=0)              
+set!(model, b=1)              
 
 """
 # plot initial profile
@@ -174,9 +175,9 @@ simulation.output_writers[:netCDF] = NetCDFOutputWriter(
                 "w" => w,
                 "b" => b,
                 "p" => p,
-                "eta" => η,
+                "η" => η,
         ),
-        #output_attributes=output_attributes,
+        output_attributes=output_attributes,
         schedule = AveragedTimeInterval(
                 save_fields_interval, 
                 window=average_window

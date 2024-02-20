@@ -53,15 +53,19 @@ wb = w*b
 
 # Info for NetCDFOutputWriter 
 output_attributes = Dict(
-    "uu"  => Dict("long_name" => "Velocity advection u*u cross term", "units" => "m2/s2"),
-    "vv"  => Dict("long_name" => "Velocity advection v*v cross term", "units" => "m2/s2"),
-    "uv"  => Dict("long_name" => "Velocity advection u*v cross term", "units" => "m2/s2"),
-    "ub"  => Dict("long_name" => "Buoyancy advection u*b cross term", "units" => "m2/s3"),
-    "vb"  => Dict("long_name" => "Buoyancy advection v*b cross term", "units" => "m2/s3"),
-    "wb"  => Dict("long_name" => "Buoyancy advection w*b cross term", "units" => "m2/s3"),
+    "η"  => Dict("long_name" => "Free surface height", "units" => "m"),
+    "p"  => Dict("long_name" => "Pressure", "units" => "N/m²"),
+    "uu"  => Dict("long_name" => "Velocity advection u*u", "units" => "m²/s²"),
+    "vv"  => Dict("long_name" => "Velocity advection v*v", "units" => "m²/s²"),
+    "uv"  => Dict("long_name" => "Velocity advection u*v", "units" => "m²/s²"),
+    "ub"  => Dict("long_name" => "Buoyancy advection u*b", "units" => "m²/s²"),
+    "vb"  => Dict("long_name" => "Buoyancy advection v*b", "units" => "m²/s³"),
+    "wb"  => Dict("long_name" => "Buoyancy advection w*b", "units" => "m²/s³"),
 )
 
-
+global_attributes = Dict(
+    "author" => "Anna Lina Sjur"
+)
 
 #bottom drag
 #Se her : https://github.com/CliMA/Oceananigans.jl/discussions/3081
