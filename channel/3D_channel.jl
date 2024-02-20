@@ -10,7 +10,8 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-stop_time = 200days
+#stop_time = 200days
+stop_time = 3hours
 # Create grid
 underlying_grid = RectilinearGrid(
         architecture;
@@ -119,7 +120,7 @@ U = Average(u, dims=1)
 V = Average(v, dims=1)
 W = Average(w, dims=1)
 B = Average(b, dims=1)
-H = Average(η, dims=1)
+H = Average(η, dims=(1,3))
 
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
