@@ -7,18 +7,22 @@ using JLD2
 # Define the path to the saved output file containing simulation data
 filename = "channel/data/test_bottom_drag_output.jld2"
 
-
 # Open the JLD2 file and extract time series data 
-u_bc_ts = FieldTimeSeries(filename, "u_bc_op")
-v_bc_ts = FieldTimeSeries(filename, "v_bc_op")
-u_im_bc_ts = FieldTimeSeries(filename, "u_im_bc_op")
-v_im_bc_ts = FieldTimeSeries(filename, "v_im_bc_op")
+u_bc_ts = FieldTimeSeries(filename, "u_bc_field")
+v_bc_ts = FieldTimeSeries(filename, "v_bc_field")
+u_im_bc_ts = FieldTimeSeries(filename, "u_im_bc_field")
+v_im_bc_ts = FieldTimeSeries(filename, "v_im_bc_field")
 
-xu, yu = nodes(u_bc_ts[1])
-xv, yv = nodes(v_bc_ts[1])
+u = FieldTimeSeries(filename, "u")
+v = FieldTimeSeries(filename, "v")
+#w = FieldTimeSeries(filename, "w")
+
+xu, yu, zu = nodes(u[1])
+xv, yv, zv = nodes(v[1])
+#xw, yw, zw = nodes(w[1])
 
 # Extract time points and bottom height 
-times = u_bc_ts.times
+zutimes = u_bc_ts.times
 h = u_bc_ts.grid.immersed_boundary.bottom_height
 h = interior(h,1,:,1)  # Adjust the bottom height array for visualization
 
@@ -67,7 +71,7 @@ ax_v = Axis(fig[3, 1];
 
 ax_h = Axis(fig[4, 1]; 
     title = "bottom height", 
-    limits = ((0, 4e4), ((minimum(h), 0))),
+    limits = ((0, 4e4), (minimum(h), maximum(h)*0.8)),
     titlesize = 20,
     xlabel = "y"
     #ylabel = ""
@@ -87,6 +91,7 @@ lines!(ax_v, yv, v_bcₙ; linewidth = 4, label="v_bc_op")
 lines!(ax_v, yv, v_im_bcₙ; linewidth = 4, linestyle = :dash, label="v_im_bc_op")
 
 vlines!(ax_h, yu, color = :gray)
+hlines!(ax_h, zu, color = :gray)
 band!(ax_h, yu, minimum(h), h, alpha=0.5, color=:lightgray)
 
 # Define the frame range for the animation
