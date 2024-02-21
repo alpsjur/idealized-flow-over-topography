@@ -72,8 +72,19 @@ global_attributes = Dict(
 )
 
 #bottom drag
-#Se her : https://github.com/CliMA/Oceananigans.jl/discussions/3081
+#Bottom drag, kunn på bunn: https://github.com/CliMA/Oceananigans.jl/discussions/3081
+#Finne verdi bare ved immersed bahtymetry: https://github.com/CliMA/Oceananigans.jl/discussions/3032
 
+# code based on https://github.com/CliMA/Oceananigans.jl/discussions/3032 for extracting velocity at immersed boundary
+using Oceananigans.ImmersedBoundaries: immersed_peripheral_node
+using Oceananigans.Fields: condition_operand
+
+@inline bottom_condition(i, j, k, grid) = immersed_peripheral_node(i, j, k-1, grid, Center(), Center(), Center())
+u_b = sum(condition_operand(identity, u, bottom_condition, 0.0), dims = 3)
+v_b = sum(condition_operand(identity, v, bottom_condition, 0.0), dims = 3)
+
+
+# Code based on https://github.com/CliMA/Oceananigans.jl/discussions/3081 for extracting bottom drag
 using Oceananigans.BoundaryConditions: getbc
 using Oceananigans: fields
 
@@ -96,8 +107,7 @@ u_bc_op = KernelFunctionOperation{Face, Center, Nothing}(kernel_getbc, grid, u_b
 v_bc_op = KernelFunctionOperation{Center, Face, Nothing}(kernel_getbc, grid, v_bc, clock, model_fields)
 
 u_im_bc_op = KernelFunctionOperation{Face, Center, Nothing}(kernel_getbc, grid, u_im_bc, clock, model_fields)
-v_im_bc_op = KernelFunctionOperation{Center, Face, Nothing}(kernel_getbc, grid, v_im_bc, clock, model_fields)
-
+v_im_bc_op = KernelFunctionOperation{Face, Center, Nothing}(kernel_getbc, grid, v_im_bc, clock, model_fields)
 
 
 # Build Fields
@@ -106,8 +116,6 @@ v_bc_field = Field(v_bc_op)
 
 u_im_bc_field = Field(u_im_bc_op)
 v_im_bc_field = Field(v_im_bc_op)
-
-#Field(u_bc_field+u_im_bc_field)
 
 
 # logging simulation progress

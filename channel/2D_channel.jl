@@ -1,6 +1,6 @@
 include("channel_setup.jl")
 
-
+stop_time = 3*Δt
 
 # Create grid
 underlying_grid = RectilinearGrid(
@@ -77,8 +77,9 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
   model, (; 
     u, v, w,
     uu, vv, uv,
-    η, p, b,
-    ub, vb, wb,  
+    η, p, 
+    #b,
+    #ub, vb, wb,  
   ),
   schedule = AveragedTimeInterval(
     save_fields_interval, 
