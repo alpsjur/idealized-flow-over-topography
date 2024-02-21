@@ -125,3 +125,71 @@ fig.update_layout(updatemenus=[dict(type='buttons',
 
 # Show the first frame to start
 fig.show()
+
+
+
+
+# shift velocity data to center of grid and exclude halos
+# Domain is re-entrant in the x-direction, so uc is calculated slightly different from v and w
+u = ds.u.values
+v = ds.v.values
+w = ds.w.values
+
+halos = 4
+
+uc = 0.5*(u[halos:-halos,halos:-halos,halos:-(halos)]+u[halos:-halos,halos:-halos,1+halos:-(halos-1)])
+vc = 0.5*(v[halos:-halos,halos:-(1+halos),halos:-halos]+v[halos:-halos,1+halos:-halos,halos:-halos])
+wc = 0.5*(w[halos:-(1+halos),halos:-halos,halos:-halos]+w[1+halos:-halos,halos:-halos,halos:-halos])
+
+uc.shape, vc.shape, wc.shape 
+
+# Exclude halos from dataset 
+ds = ds.isel(xC=slice(halos,-halos), xF=slice(halos,-halos), yC=slice(halos,-halos), yF=slice(halos,-halos), zC= slice(halos,-halos))
+
+h = xr.open_dataarray(file+"_bottom_height.nc").isel(xC=slice(halos,-halos), yC=slice(halos,-halos))
+
+x = h.xC.values*1e-3
+y = h.yC.values*1e-3
+z = ds.zC.values
+
+X, Y = np.meshgrid(x, y)
+H = h.values.squeeze()
+
+fig = go.Figure(data=[go.Surface(x=X, y=Y,z=H, 
+                                 colorscale=[(0, 'gray'), (1, 'gray')], 
+                                 opacity=0.5,
+                                 showscale=False
+                                 )
+                      ]
+                )
+
+
+fig.update_layout(title='Streamtubes', 
+                  autosize=False,
+                  template="plotly",
+                  scene=dict(
+        xaxis=dict(range=[min(x), max(x)], title='x [km]'),  
+        yaxis=dict(range=[min(y), max(y)], title='y [km]'),  
+        zaxis=dict(range=[min(H.flatten())*1.1, 100], title='Depth [m]') 
+    )
+)
+
+
+fig.update_traces(contours_z=dict(
+                                  show=True, 
+                                  #usecolormap=True,
+                                  #project_z=True
+                                  )
+                  )
+
+eta = ds.eta.values
+
+# scale eta to show up on 
+eta = eta/np.max(np.abs(eta.flatten()))*100
+
+fig.add_trace(go.Surface(z=eta, x=X, y=Y, 
+                         colorscale='deep_r', 
+                         showscale=False,
+                         
+                         )
+              )
