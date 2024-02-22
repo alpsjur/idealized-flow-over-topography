@@ -1,13 +1,13 @@
 include("channel_setup.jl")
 figurepath = "channel/figures/"
 
-Nx = 20
-Ny = 20
+Nx = 10
+Ny = 40
 
 Lx = dx*Nx 
 Ly = dy*Ny
 
-stop_time = 200days 
+stop_time = 100days 
 
 function hᵢ(x, y)
     if y < Ly/2 
@@ -98,7 +98,7 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
         model, (; 
         u, v, w,
         u_bc_op, v_bc_op, u_im_bc_op, v_im_bc_op,
-        u_bc_field, v_bc_field, u_im_bc_field, v_im_bc_field,
+        u_b, v_b,
         ),
         schedule = AveragedTimeInterval(
                 save_fields_interval, 
