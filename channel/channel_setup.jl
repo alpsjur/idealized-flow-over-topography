@@ -21,7 +21,7 @@ dx = 2kilometers                # Grid spacing in x-direction
 dy = 2kilometers                # Grid spacing in y-direction
 Nx = Int(Lx/dx)                 # Number of grid cells in x-direction
 Ny = Int(Ly/dy)                 # Number of grid cells in y-direction
-Nz = 51                         # Number of grid cells in z-direction
+Nz = 50                         # Number of grid cells in z-direction
 
 # Function for generating z-coordinate faces
 z_faces(k) = Lz * (Σ(k/Nz)-1)   # Uses stretching function Σ for vertical grid spacing
