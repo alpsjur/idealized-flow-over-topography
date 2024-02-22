@@ -79,8 +79,7 @@ model = HydrostaticFreeSurfaceModel(;
 println(model)
 
 # set initial density profile
-#set!(model, b=initial_buoyancy)  
-set!(model, T=12, S=32)              
+#set!(model, b=initial_buoyancy)             
 
 """
 # plot initial profile
@@ -118,7 +117,7 @@ datapath = "channel/data/"
 U = Average(u, dims=1)
 V = Average(v, dims=1)
 W = Average(w, dims=1)
-#B = Average(b, dims=1)
+B = Average(b, dims=1)
 H = Average(η′, dims=(1,3))
 
 
@@ -128,7 +127,7 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
                 #uu, vv, uv,
                 η, 
                 p, p_b,
-                #b,
+                b,
                 #ub, vb, wb,  
         ),
         schedule = AveragedTimeInterval(
@@ -145,7 +144,7 @@ simulation.output_writers[:averages] = JLD2OutputWriter(
         model, (; 
                 U, V, W,
                 H, 
-                #B, 
+                B, 
         ),
         schedule = AveragedTimeInterval(
                 save_fields_interval, 
@@ -171,7 +170,7 @@ simulation.output_writers[:netCDF] = NetCDFOutputWriter(
                 "u" => u,
                 "v" => v,
                 "w" => w,
-                #"b" => b,
+                "b" => b,
                 "p" => p,
                 "eta" => η,
         ),

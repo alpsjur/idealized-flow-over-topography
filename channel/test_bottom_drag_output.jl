@@ -64,15 +64,15 @@ model = HydrostaticFreeSurfaceModel(;
         tracer_advection = WENO(),
         closure = (horizontal_closure, vertical_closure),
         coriolis = coriolis,
-        #buoyancy = BuoyancyTracer(),
-        #tracers = :b,
+        buoyancy = BuoyancyTracer(),
+        tracers = :b,
 )
 
 println(model)
 
 # set initial density profile
 #set!(model, b=initial_buoyancy)  
-set!(model, T=12, S=32)   
+  
 
 # create simulations
 simulation = Simulation(model, Δt=Δt, stop_time=stop_time)

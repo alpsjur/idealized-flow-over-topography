@@ -37,7 +37,6 @@ model =  HydrostaticFreeSurfaceModel(;
 )
 
 #set!(model, b=initial_buoyancy)  
-#set!(model, T=12, S=32) 
 
 println(model)
 """
@@ -80,7 +79,7 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
     η, 
     #η′,
     p, p_b,
-    #b,
+    b,
     #ub, vb, wb,  
   ),
   schedule = AveragedTimeInterval(
