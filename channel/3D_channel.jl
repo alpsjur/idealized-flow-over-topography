@@ -127,7 +127,7 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
                 u, v, w,
                 #uu, vv, uv,
                 η, 
-                p, 
+                p, p_b,
                 #b,
                 #ub, vb, wb,  
         ),

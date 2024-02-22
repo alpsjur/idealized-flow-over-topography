@@ -32,12 +32,12 @@ model =  HydrostaticFreeSurfaceModel(;
   tracer_advection = WENO(),
   closure = (horizontal_closure, vertical_closure),
   coriolis = coriolis,
-  #buoyancy = BuoyancyTracer(),
-  #tracers = :b,
+  buoyancy = BuoyancyTracer(),
+  tracers = :b,
 )
 
 #set!(model, b=initial_buoyancy)  
-set!(model, T=12, S=32) 
+#set!(model, T=12, S=32) 
 
 println(model)
 """
@@ -79,7 +79,7 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
     uu, vv, uv,
     η, 
     #η′,
-    p, 
+    p, p_b,
     #b,
     #ub, vb, wb,  
   ),
