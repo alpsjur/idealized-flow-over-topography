@@ -41,7 +41,7 @@ p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans
 #b = model.tracers.b
 h = model.grid.immersed_boundary.bottom_height
 
-η = Average(η′, dims=3)
+#η = Average(η′, dims=3)
 
 
 uu = u*u 
