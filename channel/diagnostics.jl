@@ -38,7 +38,6 @@ end
 u, v, w = model.velocities
 p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
 η′ = model.free_surface.η
-#b = model.tracers.b
 h = model.grid.immersed_boundary.bottom_height
 
 η = Average(η′, dims=3)
@@ -47,14 +46,20 @@ h = model.grid.immersed_boundary.bottom_height
 uu = u*u 
 vv = v*v
 uv = u*v
-#ub = u*b
-#vb = v*b 
-#wb = w*b
+
+if "b" ∈ model.tracers
+    b = model.tracers.b
+    ub = u*b
+    vb = v*b 
+    wb = w*b
+end
 
 
-dims = Dict("h" => ("xC", "yC"))
+
 
 # Info for NetCDFOutputWriter 
+dims = Dict("h" => ("xC", "yC"))
+
 output_attributes = Dict(
     "h"  => Dict("long_name" => "Bottom height", "units" => "m"),
     "eta"  => Dict("long_name" => "Free surface height", "units" => "m"),
@@ -72,19 +77,25 @@ global_attributes = Dict(
 )
 
 #bottom drag
-#Bottom drag, kunn på bunn: https://github.com/CliMA/Oceananigans.jl/discussions/3081
+#Bottom drag, kun på bunn: https://github.com/CliMA/Oceananigans.jl/discussions/3081
 #Finne verdi bare ved immersed bahtymetry: https://github.com/CliMA/Oceananigans.jl/discussions/3032
 
-# code based on https://github.com/CliMA/Oceananigans.jl/discussions/3032 for extracting velocity at immersed boundary
+# code based on https://github.com/CliMA/Oceananigans.jl/discussions/3032 for extracting fields at immersed boundary
 using Oceananigans.ImmersedBoundaries: immersed_peripheral_node
 using Oceananigans.Fields: condition_operand
 
 @inline bottom_condition(i, j, k, grid) = immersed_peripheral_node(i, j, k-1, grid, Center(), Center(), Center())
+
+# bottom velocities
 u_b = sum(condition_operand(identity, u, bottom_condition, 0.0), dims = 3)
 v_b = sum(condition_operand(identity, v, bottom_condition, 0.0), dims = 3)
 
 
-# Code based on https://github.com/CliMA/Oceananigans.jl/discussions/3081 for extracting bottom drag
+# bottom pressure 
+p_b = sum(condition_operand(identity, p, bottom_condition, 0.0), dims = 3)
+
+
+### Code based on https://github.com/CliMA/Oceananigans.jl/discussions/3081 for extracting bottom drag
 using Oceananigans.BoundaryConditions: getbc
 using Oceananigans: fields
 
