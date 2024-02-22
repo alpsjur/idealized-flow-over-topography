@@ -1,4 +1,4 @@
-name = "idealized-flow-over-topography"
+name = "idealized_flow_over_topography"
 uuid = "94431c5b-1204-41ce-a279-117550cf71c1"
 authors = ["alpsjur <alpsjur@runbox.com>"]
 version = "0.1.0"
