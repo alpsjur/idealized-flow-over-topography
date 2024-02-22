@@ -27,6 +27,7 @@ Manifest.toml
 *.mp4
 *.pdf
 *.png
+*.html
 
 # data files 
 *.jld2
