@@ -111,7 +111,7 @@ include("diagnostics.jl")
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
-filename = "3D_channel_test"
+filename = "3D_channel"
 datapath = "channel/data/"
 
 U = Average(u, dims=1)
