@@ -1,6 +1,5 @@
 include("channel_setup.jl")
 
-stop_time = 3*Δt
 
 # Create grid
 underlying_grid = RectilinearGrid(

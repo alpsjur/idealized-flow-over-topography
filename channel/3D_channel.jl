@@ -1,17 +1,14 @@
 include("channel_setup.jl")
 
 # TODO 
-# z-spacing
-# set averaging time 
-# set friction parameter
 # save bottom drag 
 # save bottom pressure
 
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-stop_time = 200days
-#stop_time = 3*Δt
+#stop_time = 200days
+stop_time = 3*Δt
 
 # Create grid
 underlying_grid = RectilinearGrid(
@@ -115,7 +112,7 @@ include("diagnostics.jl")
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
-filename = "3D_channel_nostrat"
+filename = "3D_channel_test"
 datapath = "channel/data/"
 
 U = Average(u, dims=1)
