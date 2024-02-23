@@ -54,10 +54,10 @@ decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [
 
 
 # Turbulence closures parameters for vertical and horizontal mixing
-κh = 100    # [m²/s] horizontal diffusivity
-νh = 100    # [m²/s] horizontal viscocity      Increase if simulation blows up
-κz = 1e-5   # [m²/s] vertical diffusivity
-νz = 1e-5   # [m²/s] vertical viscocity
+κh = 100    # [m²/s] horizontal diffusivity (tracers)
+νh = 100    # [m²/s] horizontal viscocity   (momentum)
+κz = 1e-2   # [m²/s] vertical diffusivity
+νz = 1e-2   # [m²/s] vertical viscocity
 vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)                  
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 
