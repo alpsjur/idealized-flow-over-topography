@@ -36,9 +36,10 @@ model =  HydrostaticFreeSurfaceModel(;
   tracers = :b,
 )
 
-#set!(model, b=initial_buoyancy)  
+set!(model, b=initial_buoyancy)  
 
 println(model)
+
 """
 # plot initial profile
 figurepath = "channel/figures/"
