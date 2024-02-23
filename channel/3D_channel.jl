@@ -7,8 +7,8 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-#stop_time = 200days
-stop_time = 3*Δt
+stop_time = 200days
+#stop_time = 3*Δt
 
 # Create grid
 underlying_grid = RectilinearGrid(
@@ -72,8 +72,8 @@ model = HydrostaticFreeSurfaceModel(;
         tracer_advection = WENO(),
         closure = (horizontal_closure, vertical_closure),
         coriolis = coriolis,
-        #buoyancy = BuoyancyTracer(),
-        #tracers = :b,
+        buoyancy = BuoyancyTracer(),
+        tracers = :b,
 )
 
 println(model)
@@ -111,7 +111,7 @@ include("diagnostics.jl")
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
-filename = "3D_channel"
+filename = "3D_channel_nostrat"
 datapath = "channel/data/"
 
 U = Average(u, dims=1)
@@ -126,7 +126,8 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
                 u, v, w,
                 #uu, vv, uv,
                 η, 
-                p, p_b,
+                p, 
+                #p_b,
                 b,
                 #ub, vb, wb,  
         ),
