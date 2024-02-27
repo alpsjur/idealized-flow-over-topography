@@ -7,6 +7,8 @@ using Printf                    # For formatted output
 using CairoMakie                # For visualization
 using CUDA
 
+figurepath = "channel/figures/"
+
 # Simulation parameters
 Δt = 30second                   # Time step size
 stop_time = 400days             # Simulation stop time
@@ -27,8 +29,8 @@ Nz = 50                         # Number of grid cells in z-direction
 z_faces(k) = Lz * (Σ(k/Nz)-1)   # Uses stretching function Σ for vertical grid spacing
 
 # Bathymetry parameters (Nummelin & Isachsen, 2024)
-W  = 75kilometers               # Width parameter for bathymetry
-YC = 150kilometers              # Center y-coordinate for bathymetry features
+W  = 200kilometers               # Width parameter for bathymetry
+YC = 200kilometers              # Center y-coordinate for bathymetry features
 DS = 2000meters                 # Depth scale
 DB = 250meters                  # Base depth
 σ  = 10meters                   # Standard deviation for random noise in topography

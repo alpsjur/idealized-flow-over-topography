@@ -44,7 +44,7 @@ scatter!(ax, ks, zs)
 save(figurepath*"vertical_grid_spacing.png", fig)
 """
 
-"""
+
 # visualize bathymetry
 x, y, z = nodes(grid, (Center(), Center(), Center()))
 
@@ -61,7 +61,7 @@ Colorbar(fig[1, 2], hm, label = "depth [m]")
 
 current_figure() # hide
 save(figurepath*"channel_bathymetry.png", fig)  
-"""
+
 
 # create model
 model = HydrostaticFreeSurfaceModel(; 
