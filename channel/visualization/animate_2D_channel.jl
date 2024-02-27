@@ -5,15 +5,16 @@ using Printf
 using JLD2
 
 # Define the path to the saved output file containing simulation data
-filename = "channel/data/2D_channel_nostrat.jld2"
+filepath = "channel/data/"
+filename = "3D_channel_strat_average"
 
 file = jldopen(filename)
 
 # Open the JLD2 file and extract time series data 
-v_timeseries = FieldTimeSeries(filename, "v")
-w_timeseries = FieldTimeSeries(filename, "w")
-b_timeseries = FieldTimeSeries(filename, "b")
-η_timeseries = FieldTimeSeries(filename, "η")
+v_timeseries = FieldTimeSeries(filepath*filename*".jld2", "v")
+w_timeseries = FieldTimeSeries(filepath*filename*".jld2", "w")
+b_timeseries = FieldTimeSeries(filepath*filename*".jld2", "b")
+η_timeseries = FieldTimeSeries(filepath*filename*".jld2", "η")
 
 
 # Extract time points and bottom height 
@@ -98,13 +99,13 @@ ax_vs = Axis(fig[4:5, 1];
     title = "velocity [m/s]", 
     axis_kwargs...
     )
-"""
+
 ax_b = Axis(fig[6:7, 1]; 
     title = "buoyancy", 
     xlabel = "Cross-channel distance [m]", 
     axis_kwargs...
     )
-"""
+
 # Add a title 
 fig[1, :] = Label(fig, title, fontsize=24, tellwidth=false)
 
@@ -131,18 +132,18 @@ band!(ax_vs, yc, minimum(h), h, alpha=0.5, color=:lightgray)
 Colorbar(fig[4:5, 2], hm_s)
 
 
-"""
+
 # Create a heatmap for the buoyancy field
 hm_b = heatmap!(ax_b, yc, zc, bₙ; colorrange = (bmin, bmax), colormap = :dense)
 Colorbar(fig[6:7, 2], hm_b)
 band!(ax_b, yc, minimum(h), h, alpha=0.5, color=:lightgray)
-"""
+
 
 # Define the frame range for the animation
 frames = 1:length(times)
 
 # Record the animation, updating the figure for each time step
-CairoMakie.record(fig, "channel/animations/2D_channel_nostrat.mp4", frames, framerate=8) do i
+CairoMakie.record(fig, "channel/animations/"*filename*".mp4", frames, framerate=8) do i
     msg = string("Plotting frame ", i, " of ", frames[end])
     print(msg * " \r")  # Log progress without creating a new line for each frame
     n[] = i             # Update the observable to the current frame index

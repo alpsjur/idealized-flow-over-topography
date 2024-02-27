@@ -6,7 +6,7 @@ using JLD2
 
 # Define the path to the saved output file containing simulation data
 filepath = "channel/data/"
-filename = "3D_channel_nostrat_average"
+filename = "3D_channel_strat_average"
 
 file = jldopen(filepath*filename*".jld2")
 
@@ -100,13 +100,13 @@ ax_vs = Axis(fig[4:5, 1];
     title = "velocity [m/s]", 
     axis_kwargs...
     )
-"""
+
 ax_b = Axis(fig[6:7, 1]; 
     title = "buoyancy", 
     xlabel = "Cross-channel distance [m]", 
     axis_kwargs...
     )
-"""
+
 # Add a title 
 fig[1, :] = Label(fig, title, fontsize=24, tellwidth=false)
 
@@ -133,12 +133,11 @@ band!(ax_vs, yc, minimum(h), h, alpha=0.5, color=:lightgray)
 Colorbar(fig[4:5, 2], hm_s)
 
 
-"""
 # Create a heatmap for the buoyancy field
 hm_b = heatmap!(ax_b, yc, zc, bₙ; colorrange = (bmin, bmax), colormap = :dense)
 Colorbar(fig[6:7, 2], hm_b)
 band!(ax_b, yc, minimum(h), h, alpha=0.5, color=:lightgray)
-"""
+
 
 # Define the frame range for the animation
 frames = 1:length(times)
