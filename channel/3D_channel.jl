@@ -7,7 +7,7 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-stop_time = 200days
+stop_time = 50days
 #stop_time = 3*Δt
 
 # Create grid
@@ -43,7 +43,7 @@ zs = z_faces.(ks)
 
 scatter!(ax, ks, zs)
 save(figurepath*"vertical_grid_spacing.png", fig)
-"""
+
 # visualize y grid spacing
 fig = Figure()
 ax = Axis(fig[1, 1], xlabel = "y (m)", ylabel = "y spacing (m)")
@@ -69,7 +69,7 @@ Colorbar(fig[1, 2], hm, label = "depth [m]")
 
 current_figure() # hide
 save(figurepath*"channel_bathymetry.png", fig)  
-
+"""
 
 # create model
 model = HydrostaticFreeSurfaceModel(; 
