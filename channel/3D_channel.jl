@@ -15,7 +15,8 @@ underlying_grid = RectilinearGrid(
         architecture;
         size=(Nx, Ny, Nz), 
         x = (0, Lx),
-        y = (0, Ly),
+        #y = (0, Ly),
+        y = y_faces,
         z = z_faces,
         halo = (4, 4, 4),
         topology=(Periodic, Bounded, Bounded)
@@ -24,7 +25,7 @@ underlying_grid = RectilinearGrid(
 # create grid with immersed bathymetry 
 grid = ImmersedBoundaryGrid(underlying_grid, 
                             #GridFittedBottom(hᵢ)
-                            PartialCellBottom(hᵢ)
+                            PartialCellBottom(hᵢ, minimum_fractional_cell_height=0.1)
                             )
 
 
@@ -43,6 +44,13 @@ zs = z_faces.(ks)
 scatter!(ax, ks, zs)
 save(figurepath*"vertical_grid_spacing.png", fig)
 """
+# visualize y grid spacing
+fig = Figure()
+ax = Axis(fig[1, 1], xlabel = "y (m)", ylabel = "y spacing (m)")
+
+lines!(ax, ynodes(underlying_grid, Center()), yspacings(underlying_grid, Center()))
+scatter!(ax, ynodes(underlying_grid, Center()), yspacings(underlying_grid, Center()))
+save(figurepath*"y_grid_spacing.png", fig)
 
 
 # visualize bathymetry
@@ -70,7 +78,7 @@ model = HydrostaticFreeSurfaceModel(;
         free_surface = ImplicitFreeSurface(),
         momentum_advection = WENO(),
         tracer_advection = WENO(),
-        closure = (horizontal_closure, vertical_closure),
+        closure = closure,
         coriolis = coriolis,
         buoyancy = BuoyancyTracer(),
         tracers = :b,

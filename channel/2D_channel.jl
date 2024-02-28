@@ -6,7 +6,8 @@ stop_time = 90
 underlying_grid = RectilinearGrid(
   architecture;
   size=(Ny, Nz), 
-  y = (0, Ly),
+  #y = (0, Ly),
+  y = y_faces,
   z = z_faces,
   halo = (4, 4),
   topology=(Flat, Bounded, Bounded)

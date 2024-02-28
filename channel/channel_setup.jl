@@ -20,13 +20,12 @@ Lx = 416kilometers              # Domain length in x-direction
 Ly = 1024kilometers             # Domain length in y-direction
 Lz = 2300meters                 # Domain depth
 dx = 2kilometers                # Grid spacing in x-direction
-dy = 2kilometers                # Grid spacing in y-direction
+#dy = 2kilometers                # Grid spacing in y-direction
+dy_slope = 1kilometer
+dy_flat  = 2kilometers
 Nx = Int(Lx/dx)                 # Number of grid cells in x-direction
-Ny = Int(Ly/dy)                 # Number of grid cells in y-direction
+#Ny = Int(Ly/dy)                 # Number of grid cells in y-direction
 Nz = 50                         # Number of grid cells in z-direction
-
-# Function for generating z-coordinate faces
-z_faces(k) = Lz * (Σ(k/Nz)-1)   # Uses stretching function Σ for vertical grid spacing
 
 # Bathymetry parameters (Nummelin & Isachsen, 2024)
 W  = 200kilometers               # Width parameter for bathymetry
@@ -60,8 +59,8 @@ decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [
 νh = 100    # [m²/s] horizontal viscocity   (momentum)
 κz = 1e-2   # [m²/s] vertical diffusivity
 νz = 1e-2   # [m²/s] vertical viscocity
-#vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)  
-vertical_closure = VerticalScalarDiffusivity(VerticallyImplicitTimeDiscretization(), ν = νz, κ = κz)                  
+vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)  
+#vertical_closure = VerticalScalarDiffusivity(VerticallyImplicitTimeDiscretization(), ν = νz, κ = κz)                  
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 closure = (horizontal_closure, vertical_closure)
 
@@ -79,7 +78,7 @@ else
 end
 
 
-# Stretching function for vertical coordinates
+# Stretching function for vertical coordinates, with increased resolution near surface
 function Σ(nk)     
     refinement = 0.2 # fraction of points for surface layer
     depth = 0.1      # fractional depth of surface layer
@@ -91,7 +90,8 @@ function Σ(nk)
     end
 end
 
-
+# Function for generating z-coordinate faces,
+z_faces(k) = Lz * (Σ(k/Nz)-1)   # Uses stretching function Σ for vertical grid spacing
 
 # define bathymetry
 function hᵢ(x, y)
@@ -108,6 +108,23 @@ function hᵢ(x, y)
 end
 
 hᵢ(y) = hᵢ(1, y)
+
+
+# Loop for creating an array of y-coordinate faces, with increased resolution over slope to resolve bathymetry
+y_faces = [0]
+yj = 0
+while yj < Ly
+    if YC-0.5*W < yj < YC+0.5*W          
+        dyj = dy_slope
+    elseif YC-0.5*W < Ly-yj < YC+0.5*W   
+        dyj = dy_slope
+    else                       
+        dyj = dy_flat
+    end
+    global yj += dyj
+    push!(y_faces, yj)
+end        
+Ny = length(y_faces)-1
 
 # spesify bottom drag 
 drag_u(x, y, t, u, v, Cd) = -Cd*√(u^2+v^2)*u
