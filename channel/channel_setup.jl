@@ -31,7 +31,7 @@ Nz = 50                         # Number of grid cells in z-direction
 W  = 100kilometers               # Width parameter for bathymetry
 YC = 200kilometers              # Center y-coordinate for bathymetry features
 DS = 2000meters                 # Depth scale
-DB = 500meters                  # Base depth
+DB = 1000meters                  # Base depth
 σ  = 10meters                   # Standard deviation for random noise in topography
 
 # Forcing parameters
