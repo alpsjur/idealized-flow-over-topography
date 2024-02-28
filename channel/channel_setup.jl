@@ -30,7 +30,7 @@ Nz = 50                         # Number of grid cells in z-direction
 # Bathymetry parameters (Nummelin & Isachsen, 2024)
 W  = 100kilometers               # Width parameter for bathymetry
 YC = 200kilometers              # Center y-coordinate for bathymetry features
-DS = 2000meters                 # Depth scale
+DS = 500meters                 # Depth scale
 DB = 1000meters                  # Base depth
 σ  = 10meters                   # Standard deviation for random noise in topography
 
@@ -162,17 +162,25 @@ immersed_v_bc = ImmersedBoundaryCondition(bottom = immersed_drag_v_bc)
 τx_bc = FluxBoundaryCondition(τx, parameters=τ)
 τy_bc = FluxBoundaryCondition(τy, parameters=τ)
 
+# Define horizontal boundary condition
+#horizontal_bc = ValueBoundaryCondition(0.0)  # No-slip boundary condition
+horizontal_bc = FluxBoundaryCondition(0.0)    # Free-slip boundary condition
+
 
 # collect boundary conditions
 u_bc = FieldBoundaryConditions(
                                 bottom=drag_u_bc, 
                                 immersed=immersed_u_bc, 
-                                top=τx_bc
+                                top=τx_bc,
+                                north = horizontal_bc,
+                                south = horizontal_bc
                                 )
 v_bc = FieldBoundaryConditions(
                                 bottom=drag_v_bc, 
                                 immersed=immersed_v_bc, 
-                                top=τy_bc
+                                top=τy_bc,
+                                north = horizontal_bc,
+                                south = horizontal_bc
                                 )
 
 
