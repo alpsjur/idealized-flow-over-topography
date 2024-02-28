@@ -60,8 +60,12 @@ decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [
 νh = 100    # [m²/s] horizontal viscocity   (momentum)
 κz = 1e-2   # [m²/s] vertical diffusivity
 νz = 1e-2   # [m²/s] vertical viscocity
-vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)                  
+#vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)  
+vertical_closure = VerticalScalarDiffusivity(VerticallyImplicitTimeDiscretization(), ν = νz, κ = κz)                  
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
+closure = (horizontal_closure, vertical_closure)
+
+#closure = ScalarDiffusivity(VerticallyImplicitTimeDiscretization(), ν=νz, κ=κz)
 
 
 
