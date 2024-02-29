@@ -28,11 +28,11 @@ Nx = Int(Lx/dx)                 # Number of grid cells in x-direction
 Nz = 50                         # Number of grid cells in z-direction
 
 # Bathymetry parameters (Nummelin & Isachsen, 2024)
-W  = 100kilometers               # Width parameter for bathymetry
-YC = 200kilometers              # Center y-coordinate for bathymetry features
-DS = 500meters                 # Depth scale
-DB = 1000meters                  # Base depth
-σ  = 10meters                   # Standard deviation for random noise in topography
+W  = 100kilometers                # Width of slope
+YC = 200kilometers                # Center y-coordinate for slope
+DS = 1000meters                   # Depth of shelf
+DB = 1500meters                   # Depth from shelf to central basin
+σ  = 10meters                     # Standard deviation for random noise in topography
 
 # Forcing parameters
 const τ = -0.05/1000                  # Wind stress (kinematic forcing)
