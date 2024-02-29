@@ -2,21 +2,19 @@ include("channel_setup.jl")
 
 # TODO 
 # save bottom drag 
-# save bottom pressure
 
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
 stop_time = 50days
-#stop_time = 3*Δt
 
 # Create grid
 underlying_grid = RectilinearGrid(
         architecture;
         size=(Nx, Ny, Nz), 
         x = (0, Lx),
-        #y = (0, Ly),
-        y = y_faces,
+        y = (0, Ly),
+        #y = y_faces,
         z = z_faces,
         halo = (4, 4, 4),
         topology=(Periodic, Bounded, Bounded)
@@ -72,7 +70,8 @@ save(figurepath*"channel_bathymetry.png", fig)
 
 # create model
 model = HydrostaticFreeSurfaceModel(; 
-        grid,
+        #grid,
+        grid=underlying_grid,
         boundary_conditions=(u=u_bc, v=v_bc),
         free_surface = ImplicitFreeSurface(),
         momentum_advection = WENO(),
@@ -86,7 +85,7 @@ model = HydrostaticFreeSurfaceModel(;
 println(model)
 
 # set initial density profile
-#set!(model, b=initial_buoyancy)             
+#!set!(model, b=initial_buoyancy)             
 
 """
 # plot initial profile
@@ -118,7 +117,7 @@ include("diagnostics.jl")
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
-filename = "3D_channel_nostrat"
+filename = "3D_nostrat_flat_scalar"
 datapath = "channel/data/"
 
 U = Average(u, dims=1)

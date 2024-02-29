@@ -30,8 +30,8 @@ Nz = 50                         # Number of grid cells in z-direction
 # Bathymetry parameters (Nummelin & Isachsen, 2024)
 W  = 100kilometers                # Width of slope
 YC = 200kilometers                # Center y-coordinate for slope
-DS = 1500meters                   # Depth of shelf
-DB =  500meters                   # Depth from shelf to central basin
+DS =  500meters                   # Depth increase from shelf to central basin
+DB = 1500meters                   # Depth of shelf
 σ  = 10meters                     # Standard deviation for random noise in topography
 
 # Forcing parameters
@@ -61,14 +61,15 @@ decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [
 νz = 3e-4   # [m²/s] vertical viscocity
 
 # Biharmonic diffusivity
-vertical_closure = ScalarBiharmonicDiffusivity(formulation=VerticalFormulation(), ν = νz, κ = κz)
-horizontal_closure = ScalarBiharmonicDiffusivity(formulation=horizontalFormulation(), ν = νh, κ = κh)
+vertical_biclosure = ScalarBiharmonicDiffusivity(formulation=VerticalFormulation(), ν = νz, κ = κz)
+horizontal_biclosure = ScalarBiharmonicDiffusivity(formulation=horizontalFormulation(), ν = νh, κ = κh)
+biclosure = (horizontal_biclosure, vertical_biclosure)
 
-"""
+
 # Scalar diffusivity
 vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)                
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
-"""
+
 
 closure = (horizontal_closure, vertical_closure)
 

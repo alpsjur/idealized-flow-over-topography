@@ -26,7 +26,8 @@ grid = ImmersedBoundaryGrid(
 
 # create model
 model =  HydrostaticFreeSurfaceModel(; 
-  grid,
+  #grid,
+  grid=underlying_grid,
   boundary_conditions=(u=u_bc, v=v_bc),
   free_surface = ImplicitFreeSurface(),
   momentum_advection = WENO(),
@@ -37,7 +38,7 @@ model =  HydrostaticFreeSurfaceModel(;
   tracers = :b,
 )
 
-set!(model, b=initial_buoyancy)  
+!set!(model, b=initial_buoyancy)  
 
 println(model)
 
@@ -71,7 +72,7 @@ include("diagnostics.jl")
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
-filename = "2D_channel_nostrat"
+filename = "2D_nostrat_flat_scalar"
 datapath = "channel/data/"
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
