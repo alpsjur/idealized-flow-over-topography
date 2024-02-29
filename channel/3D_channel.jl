@@ -51,7 +51,7 @@ ax = Axis(fig[1, 1], xlabel = "y (m)", ylabel = "y spacing (m)")
 lines!(ax, ynodes(underlying_grid, Center()), yspacings(underlying_grid, Center()))
 scatter!(ax, ynodes(underlying_grid, Center()), yspacings(underlying_grid, Center()))
 save(figurepath*"y_grid_spacing.png", fig)
-
+"""
 
 # visualize bathymetry
 x, y, z = nodes(grid, (Center(), Center(), Center()))
@@ -69,11 +69,12 @@ Colorbar(fig[1, 2], hm, label = "depth [m]")
 
 current_figure() # hide
 save(figurepath*"channel_bathymetry.png", fig)  
-"""
+
 
 # create model
 model = HydrostaticFreeSurfaceModel(; 
-        grid,
+        #grid,
+        underlying_grid,
         boundary_conditions=(u=u_bc, v=v_bc),
         free_surface = ImplicitFreeSurface(),
         momentum_advection = WENO(),
