@@ -72,8 +72,7 @@ save(figurepath*"channel_bathymetry.png", fig)
 
 # create model
 model = HydrostaticFreeSurfaceModel(; 
-        #grid,
-        grid = underlying_grid,
+        grid,
         boundary_conditions=(u=u_bc, v=v_bc),
         free_surface = ImplicitFreeSurface(),
         momentum_advection = WENO(),
