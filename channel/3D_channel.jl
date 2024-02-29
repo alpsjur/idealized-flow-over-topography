@@ -118,7 +118,7 @@ simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
 filename = "3D_nostrat_flat_scalar"
-datapath = "channel/data/"
+datapath = "channel/data/run2/"
 
 U = Average(u, dims=1)
 V = Average(v, dims=1)
