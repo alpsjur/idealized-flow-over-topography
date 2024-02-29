@@ -32,7 +32,7 @@ model =  HydrostaticFreeSurfaceModel(;
   free_surface = ImplicitFreeSurface(),
   momentum_advection = WENO(),
   tracer_advection = WENO(),
-  closure = (horizontal_closure, vertical_closure),
+  closure = closure,
   coriolis = coriolis,
   buoyancy = BuoyancyTracer(),
   tracers = :b,
@@ -73,7 +73,7 @@ simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
 filename = "2D_nostrat_flat_scalar"
-datapath = "channel/data/"
+datapath = "channel/data/run2/"
 
 simulation.output_writers[:fields] = JLD2OutputWriter(
   model, (; 
