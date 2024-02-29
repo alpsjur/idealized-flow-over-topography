@@ -170,17 +170,15 @@ horizontal_bc = FluxBoundaryCondition(0.0)    # Free-slip boundary condition
 # collect boundary conditions
 u_bc = FieldBoundaryConditions(
                                 bottom=drag_u_bc, 
-                                immersed=immersed_u_bc, 
+#                                immersed=immersed_u_bc, 
                                 top=τx_bc,
                                 north = horizontal_bc,
-                                south = horizontal_bc
+                                south = horizontal_bc,
                                 )
 v_bc = FieldBoundaryConditions(
                                 bottom=drag_v_bc, 
-                                immersed=immersed_v_bc, 
+#                                immersed=immersed_v_bc, 
                                 top=τy_bc,
-                                north = horizontal_bc,
-                                south = horizontal_bc
                                 )
 
 
