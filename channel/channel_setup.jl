@@ -21,10 +21,20 @@ Lx = 416kilometers              # Domain length in x-direction
 Ly = 1024kilometers             # Domain length in y-direction
 Lz = 2300meters                 # Domain depth
 dx = 2kilometers                # Grid spacing in x-direction
-#dy = 2kilometers                # Grid spacing in y-direction
+dy = 2kilometers                # Grid spacing in y-direction
 dy_slope = 1kilometer
 dy_flat  = 2kilometers
-Nx = Int(Lx/dx)                 # Number of grid cells in x-directionVerticalFormulation()
+Nx = Int(Lx/dx)                 # Number of grid cells in x-direction
+Ny = Int(Ly/dy)                 # Number of grid cells in y-direction
+Nz = 50                         # Number of grid cells in z-direction
+
+# Bathymetry parameters (Nummelin & Isachsen, 2024)
+W  = 100kilometers               # Width parameter for bathymetry
+YC = 200kilometers               # Center y-coordinate for bathymetry features
+DS =  500meters                   # Depth change between shelf and central basin
+DB = 1500meters                  # Depth of shelf
+σ  = 10meters                    # Standard deviation for random noise in topography
+
 # Forcing parameters
 const τ = -0.05/1000                  # Wind stress (kinematic forcing)
 
@@ -93,7 +103,7 @@ z_faces(k) = Lz * (Σ(k/Nz)-1)   # Uses stretching function Σ for vertical grid
 
 # define bathymetry
 function hᵢ(x, y)
-    if y < (YC + W)                # shelf
+    if y < (YC + W)                # slope
         h =  -DB - 0.5*DS*(1+tanh.(π*(y-YC)/W))
     elseif Ly - y < (YC + W)       # slope
         h = -DB - 0.5*DS*(1+tanh.(π*(Ly-y-YC)/W))
@@ -108,6 +118,7 @@ end
 hᵢ(y) = hᵢ(1, y)
 
 
+"""
 # Loop for creating an array of y-coordinate faces, with increased resolution over slope to resolve bathymetry
 y_faces = [0]
 yj = 0
@@ -123,6 +134,7 @@ while yj < Ly
     push!(y_faces, yj)
 end        
 Ny = length(y_faces)-1
+"""
 
 # spesify bottom drag 
 drag_u(x, y, t, u, v, Cd) = -Cd*√(u^2+v^2)*u

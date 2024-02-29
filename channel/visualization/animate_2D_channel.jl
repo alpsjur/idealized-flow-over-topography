@@ -6,9 +6,7 @@ using JLD2
 
 # Define the path to the saved output file containing simulation data
 filepath = "channel/data/"
-filename = "3D_channel_strat_average"
-
-file = jldopen(filename)
+filename = "2D_nostrat"
 
 # Open the JLD2 file and extract time series data 
 v_timeseries = FieldTimeSeries(filepath*filename*".jld2", "v")
@@ -19,8 +17,8 @@ b_timeseries = FieldTimeSeries(filepath*filename*".jld2", "b")
 
 # Extract time points and bottom height 
 times = b_timeseries.times
-h = b_timeseries.grid.immersed_boundary.bottom_height
-h = interior(h,1,:,1)  # Adjust the bottom height array for visualization
+#h = b_timeseries.grid.immersed_boundary.bottom_height
+#h = interior(h,1,:,1)  # Adjust the bottom height array for visualization
 
 # Get coordinate arrays 
 #xv, yv, zv = nodes(v_timeseries[1])  
@@ -31,8 +29,8 @@ vc_timeseries = deepcopy(b_timeseries)
 wc_timeseries = deepcopy(b_timeseries)
 s_timeseries = deepcopy(b_timeseries)
 
-ystep = 20
-zstep = 5
+ystep = 10
+zstep = 3
 
 for i in 1:length(times)
     vᵢ = v_timeseries[i]
@@ -99,13 +97,13 @@ ax_vs = Axis(fig[4:5, 1];
     title = "velocity [m/s]", 
     axis_kwargs...
     )
-
+"""
 ax_b = Axis(fig[6:7, 1]; 
     title = "buoyancy", 
     xlabel = "Cross-channel distance [m]", 
     axis_kwargs...
     )
-
+"""
 # Add a title 
 fig[1, :] = Label(fig, title, fontsize=24, tellwidth=false)
 
@@ -118,7 +116,7 @@ ar_u = arrows!(ax_v, yc[1:ystep:end], zc, vₙ, wₙ,
     lengthscale = 1e6,
     #arrowcolor=sₙ, linecolor=sₙ, colorrange = (0, slim), colormap = :speed
 )
-band!(ax_v, yc, minimum(h), h, alpha=0.5, color=:lightgray)
+#lines!(ax_v, yc, h, color=:gray)
 Colorbar(fig[3, 2], hm_s)
 
 
@@ -128,22 +126,22 @@ ar_u = arrows!(ax_vs, yc[1:ystep:end], zc[1:zstep:end], vsₙ, wsₙ,
     lengthscale = 5e7,
     #arrowcolor=sₙ, linecolor=sₙ, colorrange = (0, slim), colormap = :speed
 )
-band!(ax_vs, yc, minimum(h), h, alpha=0.5, color=:lightgray)
+#lines!(ax_vs, yc, h, color=:gray)
 Colorbar(fig[4:5, 2], hm_s)
 
 
 
 # Create a heatmap for the buoyancy field
-hm_b = heatmap!(ax_b, yc, zc, bₙ; colorrange = (bmin, bmax), colormap = :dense)
-Colorbar(fig[6:7, 2], hm_b)
-band!(ax_b, yc, minimum(h), h, alpha=0.5, color=:lightgray)
+#hm_b = heatmap!(ax_b, yc, zc, bₙ; colorrange = (bmin, bmax), colormap = :dense)
+#Colorbar(fig[6:7, 2], hm_b)
+#lines!(ax_b, yc, h, color=:gray)
 
 
 # Define the frame range for the animation
 frames = 1:length(times)
 
 # Record the animation, updating the figure for each time step
-CairoMakie.record(fig, "channel/animations/"*filename*".mp4", frames, framerate=8) do i
+CairoMakie.record(fig, "channel/animations/"*filename*".mp4", frames, framerate=1) do i
     msg = string("Plotting frame ", i, " of ", frames[end])
     print(msg * " \r")  # Log progress without creating a new line for each frame
     n[] = i             # Update the observable to the current frame index

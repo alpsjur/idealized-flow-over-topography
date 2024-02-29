@@ -85,7 +85,7 @@ model = HydrostaticFreeSurfaceModel(;
 println(model)
 
 # set initial density profile
-#!set!(model, b=initial_buoyancy)             
+#set!(model, b=initial_buoyancy)             
 
 """
 # plot initial profile
