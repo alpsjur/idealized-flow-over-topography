@@ -54,18 +54,23 @@ LR = 35kilometers                           # Deformation radius over deep ocean
 decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [m]
 
 
-# Turbulence closures parameters for vertical and horizontal mixing
-κh = 100    # [m²/s] horizontal diffusivity (tracers)
-νh = 100    # [m²/s] horizontal viscocity   (momentum)
-κz = 1e-2   # [m²/s] vertical diffusivity
-νz = 1e-2   # [m²/s] vertical viscocity
-vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)  
-#vertical_closure = VerticalScalarDiffusivity(VerticallyImplicitTimeDiscretization(), ν = νz, κ = κz)                  
+# Turbulence closures parameters for vertical and horizontal mixing (see Stewart and Thompson 2016)
+κh = 0      # [m²/s] horizontal diffusivity (tracers)
+νh = 12     # [m²/s] horizontal viscocity   (momentum)
+κz = 5e-6   # [m²/s] vertical diffusivity
+νz = 3e-4   # [m²/s] vertical viscocity
+
+# Biharmonic diffusivity
+vertical_closure = ScalarBiharmonicDiffusivity(formulation=VerticalFormulation(), ν = νz, κ = κz)
+horizontal_closure = ScalarBiharmonicDiffusivity(formulation=horizontalFormulation(), ν = νh, κ = κh)
+
+"""
+# Scalar diffusivity
+vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)                
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
+"""
+
 closure = (horizontal_closure, vertical_closure)
-
-#closure = ScalarDiffusivity(VerticallyImplicitTimeDiscretization(), ν=νz, κ=κz)
-
 
 
 # Run on GPU (wow, fast!) if available. Else run on CPU
