@@ -30,8 +30,8 @@ Nz = 50                         # Number of grid cells in z-direction
 # Bathymetry parameters (Nummelin & Isachsen, 2024)
 W  = 100kilometers                # Width of slope
 YC = 200kilometers                # Center y-coordinate for slope
-DS = 1000meters                   # Depth of shelf
-DB = 1500meters                   # Depth from shelf to central basin
+DS = 1500meters                   # Depth of shelf
+DB =  500meters                   # Depth from shelf to central basin
 σ  = 10meters                     # Standard deviation for random noise in topography
 
 # Forcing parameters
@@ -170,14 +170,14 @@ horizontal_bc = FluxBoundaryCondition(0.0)    # Free-slip boundary condition
 # collect boundary conditions
 u_bc = FieldBoundaryConditions(
                                 bottom=drag_u_bc, 
-#                                immersed=immersed_u_bc, 
+                                immersed=immersed_u_bc, 
                                 top=τx_bc,
                                 north = horizontal_bc,
                                 south = horizontal_bc,
                                 )
 v_bc = FieldBoundaryConditions(
                                 bottom=drag_v_bc, 
-#                                immersed=immersed_v_bc, 
+                                immersed=immersed_v_bc, 
                                 top=τy_bc,
                                 )
 

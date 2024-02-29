@@ -39,7 +39,7 @@ u, v, w = model.velocities
 p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
 η′ = model.free_surface.η
 b = model.tracers.b
-#h = model.grid.immersed_boundary.bottom_height
+h = model.grid.immersed_boundary.bottom_height
 
 η = Average(η′, dims=3)
 
@@ -71,11 +71,11 @@ output_attributes = Dict(
 global_attributes = Dict(
     "author" => "Anna Lina Sjur"
 )
-"""
+
 #bottom drag
 #Bottom drag, kun på bunn: https://github.com/CliMA/Oceananigans.jl/discussions/3081
 #Finne verdi bare ved immersed bahtymetry: https://github.com/CliMA/Oceananigans.jl/discussions/3032
-
+"""
 # code based on https://github.com/CliMA/Oceananigans.jl/discussions/3032 for extracting fields at immersed boundary
 using Oceananigans.ImmersedBoundaries: immersed_peripheral_node
 using Oceananigans.Fields: condition_operand
@@ -127,14 +127,11 @@ v_im_bc_field = Field(v_im_bc_op)
 
 # logging simulation progress
 start_time = time_ns()
-progress(sim) = @printf("i: % 6d, sim time: % 15s, wall time: % 15s, max |u|: % 5.3f, max |v|: % 5.3f, max |w|: % 5.3f, max |η|: % 5.3f, next Δt: %s\n",
+progress(sim) = @printf("i: % 6d, sim time: % 15s, wall time: % 15s, max |η|: % 5.3f, next Δt: %s\n",
         sim.model.clock.iteration,
         prettytime(sim.model.clock.time),
         #sim.model.clock.time,
         prettytime(1e-9 * (time_ns() - start_time)),
-        maximum(abs, u),
-        maximum(abs, v),
-        maximum(abs, w),
         maximum(abs, η′),
         prettytime(sim.Δt),
 )
