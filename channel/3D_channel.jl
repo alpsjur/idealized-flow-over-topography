@@ -52,7 +52,6 @@ lines!(ax, ynodes(underlying_grid, Center()), yspacings(underlying_grid, Center(
 scatter!(ax, ynodes(underlying_grid, Center()), yspacings(underlying_grid, Center()))
 save(figurepath*"y_grid_spacing.png", fig)
 
-
 # visualize bathymetry
 x, y, z = nodes(grid, (Center(), Center(), Center()))
 
@@ -74,7 +73,7 @@ save(figurepath*"channel_bathymetry.png", fig)
 # create model
 model = HydrostaticFreeSurfaceModel(; 
         #grid,
-        underlying_grid,
+        grid = underlying_grid,
         boundary_conditions=(u=u_bc, v=v_bc),
         free_surface = ImplicitFreeSurface(),
         momentum_advection = WENO(),
@@ -193,7 +192,7 @@ simulation.output_writers[:netCDF] = NetCDFOutputWriter(
         overwrite_existing = true,
         with_halos = true,                     # for computation of derivatives at boundaries. 
 )
-
+"""
 # Writer for netCDF file format
 simulation.output_writers[:grid] = NetCDFOutputWriter(
         model, 
@@ -207,7 +206,7 @@ simulation.output_writers[:grid] = NetCDFOutputWriter(
         overwrite_existing = true,
         with_halos = true,                     
 )
-
+"""
 
 # action!
 run!(simulation)

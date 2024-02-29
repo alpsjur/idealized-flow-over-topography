@@ -39,7 +39,7 @@ u, v, w = model.velocities
 p = model.pressure.pHY′      # see here: https://github.com/CliMA/Oceananigans.jl/discussions/3157
 η′ = model.free_surface.η
 b = model.tracers.b
-h = model.grid.immersed_boundary.bottom_height
+#h = model.grid.immersed_boundary.bottom_height
 
 η = Average(η′, dims=3)
 
@@ -71,7 +71,7 @@ output_attributes = Dict(
 global_attributes = Dict(
     "author" => "Anna Lina Sjur"
 )
-
+"""
 #bottom drag
 #Bottom drag, kun på bunn: https://github.com/CliMA/Oceananigans.jl/discussions/3081
 #Finne verdi bare ved immersed bahtymetry: https://github.com/CliMA/Oceananigans.jl/discussions/3032
@@ -123,7 +123,7 @@ v_bc_field = Field(v_bc_op)
 
 u_im_bc_field = Field(u_im_bc_op)
 v_im_bc_field = Field(v_im_bc_op)
-
+"""
 
 # logging simulation progress
 start_time = time_ns()
