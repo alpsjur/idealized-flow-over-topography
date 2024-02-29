@@ -6,6 +6,7 @@ using Random                    # For generating random numbers
 using Printf                    # For formatted output
 using CairoMakie                # For visualization
 using CUDA
+using Oceananigans.TurbulenceClosures: HorizontalFormulation, VerticalFormulation
 
 figurepath = "channel/figures/"
 
@@ -23,17 +24,7 @@ dx = 2kilometers                # Grid spacing in x-direction
 #dy = 2kilometers                # Grid spacing in y-direction
 dy_slope = 1kilometer
 dy_flat  = 2kilometers
-Nx = Int(Lx/dx)                 # Number of grid cells in x-direction
-#Ny = Int(Ly/dy)                 # Number of grid cells in y-direction
-Nz = 50                         # Number of grid cells in z-direction
-
-# Bathymetry parameters (Nummelin & Isachsen, 2024)
-W  = 100kilometers                # Width of slope
-YC = 200kilometers                # Center y-coordinate for slope
-DS =  500meters                   # Depth increase from shelf to central basin
-DB = 1500meters                   # Depth of shelf
-σ  = 10meters                     # Standard deviation for random noise in topography
-
+Nx = Int(Lx/dx)                 # Number of grid cells in x-directionVerticalFormulation()
 # Forcing parameters
 const τ = -0.05/1000                  # Wind stress (kinematic forcing)
 
@@ -61,9 +52,10 @@ decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [
 νz = 3e-4   # [m²/s] vertical viscocity
 
 # Biharmonic diffusivity
-vertical_biclosure = ScalarBiharmonicDiffusivity(formulation=VerticalFormulation(), ν = νz, κ = κz)
-horizontal_biclosure = ScalarBiharmonicDiffusivity(formulation=horizontalFormulation(), ν = νh, κ = κh)
+vertical_biclosure = ScalarBiharmonicDiffusivity(VerticalFormulation(), ν = νz, κ = κz)
+horizontal_biclosure = ScalarBiharmonicDiffusivity(HorizontalFormulation(), ν = νh, κ = κh)
 biclosure = (horizontal_biclosure, vertical_biclosure)
+
 
 
 # Scalar diffusivity
