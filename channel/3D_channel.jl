@@ -6,7 +6,7 @@ include("channel_setup.jl")
 # Overwrite variables from channel_setup.jl
 Nx = 10
 Lx = dx*Nx
-stop_time = 50days
+stop_time = 100days
 
 # Create grid
 underlying_grid = RectilinearGrid(
@@ -76,7 +76,7 @@ model = HydrostaticFreeSurfaceModel(;
         free_surface = ImplicitFreeSurface(),
         momentum_advection = WENO(),
         tracer_advection = WENO(),
-        closure = closure,
+        #closure = closure,
         coriolis = coriolis,
         buoyancy = BuoyancyTracer(),
         tracers = :b,
@@ -117,8 +117,8 @@ include("diagnostics.jl")
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
-filename = "3D_nostrat_flat_scalar"
-datapath = "channel/data/run2/"
+filename = "noclosure_freeslip_1b"
+datapath = "channel/data/run3/"
 
 U = Average(u, dims=1)
 V = Average(v, dims=1)
@@ -126,7 +126,7 @@ W = Average(w, dims=1)
 B = Average(b, dims=1)
 H = Average(η′, dims=(1,3))
 
-
+"""
 simulation.output_writers[:fields] = JLD2OutputWriter(
         model, (; 
                 u, v, w,
@@ -146,7 +146,7 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
         with_halos = true,                           # for computation of derivatives at boundaries
         init = init_save_some_metadata!
 )
-
+"""
 simulation.output_writers[:averages] = JLD2OutputWriter(
         model, (; 
                 U, V, W,
@@ -163,7 +163,7 @@ simulation.output_writers[:averages] = JLD2OutputWriter(
         init = init_save_some_metadata!
 )
 
-
+"""
 # Remove netCDF file if it already exists 
 if isfile(datapath*filename*".nc")
         rm(datapath*filename*".nc")
@@ -190,7 +190,7 @@ simulation.output_writers[:netCDF] = NetCDFOutputWriter(
         overwrite_existing = true,
         with_halos = true,                     # for computation of derivatives at boundaries. 
 )
-"""
+
 # Writer for netCDF file format
 simulation.output_writers[:grid] = NetCDFOutputWriter(
         model, 
@@ -204,6 +204,7 @@ simulation.output_writers[:grid] = NetCDFOutputWriter(
         overwrite_existing = true,
         with_halos = true,                     
 )
+
 """
 
 # action!

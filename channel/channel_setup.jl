@@ -29,11 +29,11 @@ Ny = Int(Ly/dy)                 # Number of grid cells in y-direction
 Nz = 50                         # Number of grid cells in z-direction
 
 # Bathymetry parameters (Nummelin & Isachsen, 2024)
-W  = 100kilometers               # Width parameter for bathymetry
-YC = 200kilometers               # Center y-coordinate for bathymetry features
-DS =  500meters                   # Depth change between shelf and central basin
-DB = 1500meters                  # Depth of shelf
-σ  = 10meters                    # Standard deviation for random noise in topography
+W  =  100kilometers               # Width parameter for bathymetry
+YC =  200kilometers               # Center y-coordinate for bathymetry features
+DS = 2000meters                  # Depth change between shelf and central basin
+DB =  250meters                  # Depth of shelf
+σ  =   10meters                    # Standard deviation for random noise in topography
 
 # Forcing parameters
 const τ = -0.05/1000                  # Wind stress (kinematic forcing)
@@ -50,28 +50,26 @@ decay_from_LR(bmax, LR, f) = ((LR*abs(f)/(2))^2)/bmax
 
 
 # Stratification parameters
-bmax = 3e-2                                    # Maximum buoyancy anomaly
+bmax = 3e-2                                 # Maximum buoyancy anomaly
 LR = 35kilometers                           # Deformation radius over deep ocean
 decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [m]
 
 
-# Turbulence closures parameters for vertical and horizontal mixing (see Stewart and Thompson 2016)
+# Turbulence closures parameters for vertical and horizontal mixing 
 κh = 100      # [m²/s] horizontal diffusivity (tracers)
-νh = 100     # [m²/s] horizontal viscocity   (momentum)
-κz = 1e-2   # [m²/s] vertical diffusivity
-νz = 1e-2   # [m²/s] vertical viscocity
-
-# Biharmonic diffusivity
-vertical_biclosure = ScalarBiharmonicDiffusivity(VerticalFormulation(), ν = νz, κ = κz)
-horizontal_biclosure = ScalarBiharmonicDiffusivity(HorizontalFormulation(), ν = νh, κ = κh)
-biclosure = (horizontal_biclosure, vertical_biclosure)
-
-
+νh = 100      # [m²/s] horizontal viscocity   (momentum)
+κz = 1e-2     # [m²/s] vertical diffusivity
+νz = 1e-2     # [m²/s] vertical viscocity
 
 # Scalar diffusivity
 vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)                
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 closure = (horizontal_closure, vertical_closure)
+
+# Biharmonic diffusivity
+vertical_biclosure = ScalarBiharmonicDiffusivity(VerticalFormulation(), ν = νz, κ = κz)
+horizontal_biclosure = ScalarBiharmonicDiffusivity(HorizontalFormulation(), ν = νh, κ = κh)
+biclosure = (horizontal_biclosure, vertical_biclosure)
 
 
 # Run on GPU (wow, fast!) if available. Else run on CPU
