@@ -70,8 +70,8 @@ save(figurepath*"channel_bathymetry.png", fig)
 
 # create model
 model = HydrostaticFreeSurfaceModel(; 
-        #grid,
-        grid=underlying_grid,
+        grid,
+        #grid=underlying_grid,
         boundary_conditions=(u=u_bc, v=v_bc),
         free_surface = ImplicitFreeSurface(),
         momentum_advection = WENO(),
@@ -85,7 +85,7 @@ model = HydrostaticFreeSurfaceModel(;
 println(model)
 
 # set initial density profile
-#set!(model, b=initial_buoyancy)             
+set!(model, b=initial_buoyancy)             
 
 """
 # plot initial profile
