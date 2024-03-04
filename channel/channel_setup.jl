@@ -7,7 +7,7 @@ using Printf                    # For formatted output
 using CairoMakie                # For visualization
 using CUDA
 using Oceananigans.TurbulenceClosures
-#using Oceananigans.TurbulenceClosures: HorizontalFormulation, VerticalFormulation
+using Oceananigans.TurbulenceClosures: HorizontalFormulation, VerticalFormulation
 
 figurepath = "channel/figures/"
 
