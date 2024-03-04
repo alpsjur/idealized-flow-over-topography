@@ -47,12 +47,12 @@ f = 1e-4
 coriolis = FPlane(f)
 
 
-decay_from_LR(bmax, LR, f) = ((LR*abs(f)/(2))^2)/bmax
+decay_from_LR(bmax, LR, f) = (LR*f)^2/(4*bmax)
 
 
 # Stratification parameters
-bmax = 3e-2                                 # Maximum buoyancy anomaly
-LR = 35kilometers                           # Deformation radius over deep ocean
+bmax = 1e-2                               # Maximum buoyancy anomaly
+LR = 25kilometers                           # Deformation radius over deep ocean
 decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [m]
 
 
