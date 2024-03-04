@@ -6,7 +6,8 @@ using Random                    # For generating random numbers
 using Printf                    # For formatted output
 using CairoMakie                # For visualization
 using CUDA
-using Oceananigans.TurbulenceClosures: HorizontalFormulation, VerticalFormulation
+using Oceananigans.TurbulenceClosures
+#using Oceananigans.TurbulenceClosures: HorizontalFormulation, VerticalFormulation
 
 figurepath = "channel/figures/"
 
@@ -70,6 +71,9 @@ closure = (horizontal_closure, vertical_closure)
 vertical_biclosure = ScalarBiharmonicDiffusivity(VerticalFormulation(), ν = νz, κ = κz)
 horizontal_biclosure = ScalarBiharmonicDiffusivity(HorizontalFormulation(), ν = νh, κ = κh)
 biclosure = (horizontal_biclosure, vertical_biclosure)
+
+# Anisotropic minimum dissipation
+AMDclosure = AnisotropicMinimumDissipation()
 
 
 # Run on GPU (wow, fast!) if available. Else run on CPU
@@ -169,8 +173,8 @@ immersed_v_bc = ImmersedBoundaryCondition(bottom = immersed_drag_v_bc)
 τy_bc = FluxBoundaryCondition(τy, parameters=τ)
 
 # Define horizontal boundary condition
-#horizontal_bc = ValueBoundaryCondition(0.0)  # No-slip boundary condition
-horizontal_bc = FluxBoundaryCondition(0.0)    # Free-slip boundary condition
+horizontal_bc = ValueBoundaryCondition(0.0)  # No-slip boundary condition
+#horizontal_bc = FluxBoundaryCondition(0.0)    # Free-slip boundary condition
 
 
 # collect boundary conditions

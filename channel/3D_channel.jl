@@ -76,7 +76,7 @@ model = HydrostaticFreeSurfaceModel(;
         free_surface = ImplicitFreeSurface(),
         momentum_advection = WENO(),
         tracer_advection = WENO(),
-        #closure = closure,
+        closure = AMDclosure,
         coriolis = coriolis,
         buoyancy = BuoyancyTracer(),
         tracers = :b,
@@ -117,7 +117,7 @@ include("diagnostics.jl")
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
-filename = "noclosure_freeslip_1b"
+filename = "AMD_noslip_1b0"
 datapath = "channel/data/run3/"
 
 U = Average(u, dims=1)
@@ -147,6 +147,7 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
         init = init_save_some_metadata!
 )
 """
+
 simulation.output_writers[:averages] = JLD2OutputWriter(
         model, (; 
                 U, V, W,
