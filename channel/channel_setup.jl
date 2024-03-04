@@ -75,6 +75,31 @@ biclosure = (horizontal_biclosure, vertical_biclosure)
 # Anisotropic minimum dissipation
 AMDclosure = AnisotropicMinimumDissipation()
 
+#As Wang and Steward 2018
+κh = 0        # [m²/s] horizontal diffusivity (tracers)
+νh = 2.9e8    # [m²/s] horizontal viscocity   (momentum)   
+
+# [m²/s] vertical diffusivity
+function κ(x, y, z, t)
+    if z > -50
+        return 5e-3
+    else 
+        return 0
+    end
+end
+
+# [m²/s] vertical viscocity
+function ν(x, y, z, t)
+    if z > -50
+        return 5e-3
+    else 
+        return 0
+    end
+end
+
+horizontal_biclosure = ScalarBiharmonicDiffusivity(HorizontalFormulation(), ν = νh, κ = κh)
+vertical_surface_closure = VerticalScalarDiffusivity(ν = ν, κ = κ)
+WSclosure = (horizontal_biclosure, vertical_surface_closure)
 
 # Run on GPU (wow, fast!) if available. Else run on CPU
 if CUDA.functional()

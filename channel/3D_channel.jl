@@ -74,9 +74,9 @@ model = HydrostaticFreeSurfaceModel(;
         #grid=underlying_grid,
         boundary_conditions=(u=u_bc, v=v_bc),
         free_surface = ImplicitFreeSurface(),
-        #momentum_advection = WENO(),
-        #tracer_advection = WENO(),
-        closure = AMDclosure,
+        momentum_advection = WENO(),
+        tracer_advection = WENO(),
+        closure = WSclosure,
         coriolis = coriolis,
         buoyancy = BuoyancyTracer(),
         tracers = :b,
@@ -117,8 +117,8 @@ include("diagnostics.jl")
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
-filename = "AMD_noslip_1b0"
-datapath = "channel/data/run3/"
+filename = "WS_WEMO_noslip_1b1"
+datapath = "channel/data/run4/"
 
 U = Average(u, dims=1)
 V = Average(v, dims=1)
