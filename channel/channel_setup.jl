@@ -32,8 +32,8 @@ Nz = 50                         # Number of grid cells in z-direction
 # Bathymetry parameters (Nummelin & Isachsen, 2024)
 W  =  100kilometers               # Width parameter for bathymetry
 YC =  200kilometers               # Center y-coordinate for bathymetry features
-DS = 2000meters                  # Depth change between shelf and central basin
-DB =  250meters                  # Depth of shelf
+DS = 1800meters                  # Depth change between shelf and central basin
+DB =  500meters                  # Depth of shelf
 σ  =   10meters                    # Standard deviation for random noise in topography
 
 # Forcing parameters
@@ -55,23 +55,7 @@ bmax = 1e-2                               # Maximum buoyancy anomaly
 LR = 25kilometers                           # Deformation radius over deep ocean
 decay = decay_from_LR(bmax, LR, f)          # Decay scale for bouyancy profile [m]
 
-
-# Turbulence closures parameters for vertical and horizontal mixing 
-κh = 100      # [m²/s] horizontal diffusivity (tracers)
-νh = 100      # [m²/s] horizontal viscocity   (momentum)
-κz = 1e-2     # [m²/s] vertical diffusivity
-νz = 1e-2     # [m²/s] vertical viscocity
-
-# Scalar diffusivity
-vertical_closure = VerticalScalarDiffusivity(ν = νz, κ = κz)                
-horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
-closure = (horizontal_closure, vertical_closure)
-
-# Biharmonic diffusivity
-vertical_biclosure = ScalarBiharmonicDiffusivity(VerticalFormulation(), ν = νz, κ = κz)
-horizontal_biclosure = ScalarBiharmonicDiffusivity(HorizontalFormulation(), ν = νh, κ = κh)
-biclosure = (horizontal_biclosure, vertical_biclosure)
-
+"""
 # Anisotropic minimum dissipation
 AMDclosure = AnisotropicMinimumDissipation()
 
@@ -100,6 +84,18 @@ end
 horizontal_biclosure = ScalarBiharmonicDiffusivity(HorizontalFormulation(), ν = νh, κ = κh)
 vertical_surface_closure = VerticalScalarDiffusivity(ν = ν, κ = κ)
 WSclosure = (horizontal_biclosure, vertical_surface_closure)
+"""
+
+# Turbulence closures parameters for vertical and horizontal mixing 
+κh =   0      # [m²/s] horizontal diffusivity (tracers)
+νh = 100      # [m²/s] horizontal viscocity   (momentum)
+κz = 1e-2     # [m²/s] vertical diffusivity
+νz = 1e-2     # [m²/s] vertical viscocity
+
+# Scalar diffusivity
+vertical_closure = VerticalScalarDiffusivity(ν = ν, κ = κ)                
+horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
+closure = (horizontal_closure, vertical_closure)
 
 # Run on GPU (wow, fast!) if available. Else run on CPU
 if CUDA.functional()

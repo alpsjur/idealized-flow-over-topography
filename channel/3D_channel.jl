@@ -4,7 +4,7 @@ include("channel_setup.jl")
 # save bottom drag 
 
 # Overwrite variables from channel_setup.jl
-Nx = 10
+Nx = 20
 Lx = dx*Nx
 stop_time = 100days
 
@@ -76,7 +76,7 @@ model = HydrostaticFreeSurfaceModel(;
         free_surface = ImplicitFreeSurface(),
         momentum_advection = WENO(),
         tracer_advection = WENO(),
-        closure = WSclosure,
+        closure = closure,
         coriolis = coriolis,
         buoyancy = BuoyancyTracer(),
         tracers = :b,
@@ -117,13 +117,19 @@ include("diagnostics.jl")
 simulation.callbacks[:progress] = Callback(progress, IterationInterval(1000))
 
 # write output to file
-filename = "WS_WEMO_noslip_1b1"
-datapath = "channel/data/run4/"
+filename = "c1"
+datapath = "channel/data/run5/"
 
-U = Average(u, dims=1)
-V = Average(v, dims=1)
-W = Average(w, dims=1)
-B = Average(b, dims=1)
+Uh = Average(u, dims=1)
+Vh = Average(v, dims=1)
+Wh = Average(w, dims=1)
+Bh = Average(b, dims=1)
+
+Uv = Average(u, dims=3)
+Vv = Average(v, dims=3)
+Wv = Average(w, dims=3)
+Bv = Average(b, dims=3)
+
 H = Average(η′, dims=(1,3))
 
 """
@@ -150,9 +156,11 @@ simulation.output_writers[:fields] = JLD2OutputWriter(
 
 simulation.output_writers[:averages] = JLD2OutputWriter(
         model, (; 
-                U, V, W,
+                Uh, Vh, Wh,
+                Bh, 
                 H, 
-                B, 
+                Uv, Vv, Wv,
+                Bv,
         ),
         schedule = AveragedTimeInterval(
                 save_fields_interval, 
