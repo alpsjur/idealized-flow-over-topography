@@ -40,7 +40,7 @@ DB =  500meters                  # Depth of shelf
 const τ = -0.05/1000                  # Wind stress (kinematic forcing)
 
 # Bottom friction
-const Cd = 0.002                      # Quadratic drag coefficient []
+const Cd = 3e-3#0.002                      # Quadratic drag coefficient []
 
 # Rotation
 f = 1e-4
@@ -86,6 +86,7 @@ vertical_surface_closure = VerticalScalarDiffusivity(ν = ν, κ = κ)
 WSclosure = (horizontal_biclosure, vertical_surface_closure)
 """
 
+"""
 # Turbulence closures parameters for vertical and horizontal mixing 
 κh =   0      # [m²/s] horizontal diffusivity (tracers)
 νh = 100      # [m²/s] horizontal viscocity   (momentum)
@@ -96,6 +97,12 @@ WSclosure = (horizontal_biclosure, vertical_surface_closure)
 vertical_closure = VerticalScalarDiffusivity(ν = ν, κ = κ)                
 horizontal_closure = HorizontalScalarDiffusivity(ν = νh, κ = κh)
 closure = (horizontal_closure, vertical_closure)
+"""
+
+# from Andre
+ν = 1e-2
+κ = 1e-6
+closure = ScalarDiffusivity(VerticallyImplicitTimeDiscretization(), ν=ν, κ=1e-6)
 
 # Run on GPU (wow, fast!) if available. Else run on CPU
 if CUDA.functional()
